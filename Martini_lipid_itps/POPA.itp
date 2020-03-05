@@ -1,0 +1,67 @@
+;;;;;; Martini lipid topology for C16:0/18:1 PA (POPA), generated using:
+; The Martini lipid itp generator version 0.4  Args are: -o martini_v2.0_POPA_01.itp -alname POPA -alhead 'O' -allink 'G G' -altail 'CDCC CCCC'
+; WARNING: Lipids topology was generated following the Martini 2.0 guidelines but this specific lipid type might
+;          not have been tested and should therefore be used with care. 
+;
+; Description:
+;   A general model phosphatidic acid (PA) lipid corresponding to atomistic e.g. C16:0/18:1 1-palmitoyl-2-oleoyl (POPA) tails.
+; Parameterization:
+;   This topology follows the standard Martini 2.0 lipid definitions and building block rules.
+; Reference(s): 
+;   S.J. Marrink, A.H. de Vries, A.E. Mark. Coarse grained model for semi-quantitative lipid simulations. JPC-B, 108:750-760, 
+;   2004. doi:10.1021/jp036508g 
+;   S.J. Marrink, H.J. Risselada, S. Yefimov, D.P. Tieleman, A.H. de Vries. The MARTINI force field: coarse grained model for 
+;   biomolecular simulations. JPC-B, 111:7812-7824, 2007. doi:10.1021/jp071097f 
+;   T.A. Wassenaar, H.I. Ingolfsson, R.A. Bockmann, D.P. Tieleman, S.J. Marrink. Computational lipidomics with insane: a versatile 
+;   tool for generating custom membranes for molecular simulations. JCTC, 150410125128004, 2015. doi:10.1021/acs.jctc.5b00209
+; Created: 2015.04.20
+;
+;@INSANE alhead=O, allink=G G, altail=CDCC CCCC, alname=POPA, charge=-2.0
+;@RESNTEST POP==POPA if: atoms[0]==PO4
+;@BEADS PO4 GL1 GL2 C1A D2A C3A C4A C1B C2B C3B C4B 
+;@BONDS PO4-GL1 GL1-GL2 GL1-C1A C1A-D2A D2A-C3A C3A-C4A GL2-C1B C1B-C2B C2B-C3B C3B-C4B 
+;
+
+[moleculetype]
+; molname      nrexcl
+  POPA          1
+
+[atoms]
+; id 	type 	resnr 	residu 	atom 	cgnr 	charge
+   1 	Qa 	 1 	POPA 	PO4 	 1 	-2.0 	
+   2 	Na 	 1 	POPA 	GL1 	 2 	0 	
+   3 	Na 	 1 	POPA 	GL2 	 3 	0 	
+   4 	C1 	 1 	POPA 	C1A 	 4 	0 	
+   5 	C3 	 1 	POPA 	D2A 	 5 	0 	
+   6 	C1 	 1 	POPA 	C3A 	 6 	0 	
+   7 	C1 	 1 	POPA 	C4A 	 7 	0 	
+   8 	C1 	 1 	POPA 	C1B 	 8 	0 	
+   9 	C1 	 1 	POPA 	C2B 	 9 	0 	
+  10 	C1 	 1 	POPA 	C3B 	10 	0 	
+  11 	C1 	 1 	POPA 	C4B 	11 	0 	
+
+[bonds]
+;  i  j 	funct 	length 	force.c.
+   1  2 	1 	0.47 	1250 	
+   2  3 	1 	0.37 	1250 	
+   2  4 	1 	0.47 	1250 	
+   4  5 	1 	0.47 	1250 	
+   5  6 	1 	0.47 	1250 	
+   6  7 	1 	0.47 	1250 	
+   3  8 	1 	0.47 	1250 	
+   8  9 	1 	0.47 	1250 	
+   9 10 	1 	0.47 	1250 	
+  10 11 	1 	0.47 	1250 	
+
+[angles]
+;  i  j  k 	funct 	angle 	force.c.
+   1  2  3 	2 	120.0 	25.0 	
+   1  2  4 	2 	180.0 	25.0 	
+   2  4  5 	2 	180.0 	25.0 	
+   4  5  6 	2 	120.0 	45.0 	
+   5  6  7 	2 	180.0 	25.0 	
+   3  8  9 	2 	180.0 	25.0 	
+   8  9 10 	2 	180.0 	25.0 	
+   9 10 11 	2 	180.0 	25.0 	
+
+
