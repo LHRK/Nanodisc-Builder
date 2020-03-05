@@ -1,0 +1,13 @@
+In order to run the python scripts some module are required:
+
+- MDAnalysis
+- numpy
+- os
+- re
+- PeptideBuilder
+- argparse
+- Biopython
+- rmsd 
+
+Futhermore is Insane assumed installed as a python module in the COMMANDS_* scripts. 
+However, it can also be used as a script.
