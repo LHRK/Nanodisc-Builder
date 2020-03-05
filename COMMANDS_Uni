@@ -21,7 +21,7 @@ lipid_type='DLPC' # lipid type. The script insane.py insert the lipids
 r=3.3 # Radius of the phosphorlipid bilayer in the nanodisc
 apl=0.59 # Area per lipid in nm² for use in insane
 asym_corr=0 # Use for correting the amount of lipids in each leaflet, if insane dose not inseret the same amount in each leaflet. 
-script_dir='/home/au447022/Documents/GU/ND/Building/SCIPTS' # Directory for where all the scripts, force field parameters and mdp files are located. 
+script_dir='/PATH/SCIPTS' # Directory for where all the scripts, force field parameters and mdp files are located. 
 
 ########################
 # Reads in flags
@@ -67,10 +67,8 @@ fi
 cp ${script_dir}/Build_MSP_monomer.py .
 cp ${script_dir}/Assemble_two_monomers.py .
 
-source activate py2.7
 python -W ignore Build_MSP_monomer.py -f $fasta -o ${base}_monomer
 python -W ignore Assemble_two_monomers.py -m ${base}_monomer.pdb -o ${base}_dimer --r1 ${r1} --r2 ${r2} -t ${trans_z} --if ${interface}
-source deactivate
 
 #Adding hydrogens and generating an atomistic topology - so far only for sligar, so for circularized you will need to correct the itp file
 gmx editconf -f ${base}_dimer_assembled.pdb -o ${base}-box.gro -box ${x_len} ${y_len} ${z_len}
@@ -105,7 +103,6 @@ gmx editconf -f ${base}_dimer_assembled.pdb -box ${x_len} ${y_len} ${x_len} -o $
 AA_struc="${base}_dimer_box.pdb"
 
 #Generating the coarse grained structure
-source activate py2.7
 ##Generate the ss.dat file
 N=`grep -c CA ${AA_struc}`
 rm ss.dat # Just in case there is one file already
@@ -124,7 +121,6 @@ then
 	echo "./martinize -f ${AA_struc} -o ${base}_cg.top -x ${base}_cg.pdb -v -name ${base} -ss $(cat ss.dat) -ff ${FF} -p Backbone"
 	./martinize -f ${AA_struc} -o ${base}_cg.top -x ${base}_cg.pdb -v -name ${base} -ss $(cat ss.dat) -ff ${FF} -p Backbone
 fi
-source deactivate
 
 #######################################################################
 
@@ -135,10 +131,8 @@ then
 fi
 
 ############# Adding lipids, water and NaCl ##########################
-source activate custom
 echo "insane -f ${base}_cg.pdb -o ${base}_cg-solvent.gro -p ${base}_cg-solvent.top -pbc cubic -x ${x_len} -y ${y_len} -z ${z_len} -center -l ${lipid_type} -disc ${r} -a ${apl} -ring -sol ${W_name} -salt 0.15 -excl -1 -asym ${asym_corr}"
 insane -f ${base}_cg.pdb -o ${base}_cg-solvent.gro -p ${base}_cg-solvent.top -pbc cubic -x ${x_len} -y ${y_len} -z ${z_len} -center -l ${lipid_type} -disc ${r} -a ${apl} -ring -sol ${W_name} -salt 0.15 -excl -1 -asym ${asym_corr}
-source deactivate
 
 #####################################################################
 
@@ -209,8 +203,8 @@ sed -i "s/lipid/${lipid_type}/g" *.mdp
 sed -i "s/protein/Protein/g" *.mdp 
 
 ############# Minimazing and equlibrating CG ##########################
-#./Run.sh
-#rm step*.pdb
-#rm \#*#
+./Run.sh
+rm step*.pdb
+rm \#*#
 
 
