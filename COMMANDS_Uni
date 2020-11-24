@@ -18,10 +18,10 @@ x_len=15 #Size of the box in nm
 y_len=15
 z_len=15
 lipid_type='DLPC' # lipid type. The script insane.py insert the lipids
-r=3.3 # Radius of the phosphorlipid bilayer in the nanodisc
+#r=3.3 # Radius of the phosphorlipid bilayer in the nanodisc
 apl=0.59 # Area per lipid in nm² for use in insane
 asym_corr=0 # Use for correting the amount of lipids in each leaflet, if insane dose not inseret the same amount in each leaflet. 
-script_dir='/PATH/SCIPTS' # Directory for where all the scripts, force field parameters and mdp files are located. 
+script_dir='/home/au447022/Documents/GU/ND/Building/SCIPTS' # Directory for where all the scripts, force field parameters and mdp files are located. 
 
 ########################
 # Reads in flags
@@ -61,6 +61,17 @@ cp ${script_dir}/Martini2_itpFiles/*.itp .
         cp ${script_dir}//martini_3.0.b.3.2/martinize .
 fi
 
+########################
+# Assesing the radius of the disc
+
+# The python provides a Suggesting.txt file, with approximate radius and number of lipids per leaflet
+cp ${script_dir}/Calc_number_lipids.py .
+a=`echo "$apl * 100" | bc`
+echo "python Calc_number_lipids.py -f ${fasta} -a $a -p ${protein_area}"
+python Calc_number_lipids.py -f ${fasta} -a $a -p ${protein_area}
+r=`grep 'Radius' Suggestions.txt | awk -F ':' '{print $2}'`
+echo "suggested radius $r"
+echo "suggested radius $r" > radius.txt
 ########################
 
 # Building the MSPs and assembling them atomistically
@@ -103,6 +114,7 @@ gmx editconf -f ${base}_dimer_assembled.pdb -box ${x_len} ${y_len} ${x_len} -o $
 AA_struc="${base}_dimer_box.pdb"
 
 #Generating the coarse grained structure
+source activate py2.7
 ##Generate the ss.dat file
 N=`grep -c CA ${AA_struc}`
 rm ss.dat # Just in case there is one file already
@@ -112,6 +124,7 @@ echo -n 'H' >> ss.dat
 done
 
 ################ Coarse graining ######################################
+source activate py.27
 if [ "$f" = "Connect" ]
 then
 	echo "./martinize -f ${AA_struc} -o ${base}_cg.top -x ${base}_cg.pdb -v -name ${base} -ss $(cat ss.dat) -ff ${FF} -p Backbone -nt"
@@ -121,6 +134,7 @@ then
 	echo "./martinize -f ${AA_struc} -o ${base}_cg.top -x ${base}_cg.pdb -v -name ${base} -ss $(cat ss.dat) -ff ${FF} -p Backbone"
 	./martinize -f ${AA_struc} -o ${base}_cg.top -x ${base}_cg.pdb -v -name ${base} -ss $(cat ss.dat) -ff ${FF} -p Backbone
 fi
+source deactivate
 
 #######################################################################
 
@@ -203,8 +217,8 @@ sed -i "s/lipid/${lipid_type}/g" *.mdp
 sed -i "s/protein/Protein/g" *.mdp 
 
 ############# Minimazing and equlibrating CG ##########################
-./Run.sh
-rm step*.pdb
-rm \#*#
+#./Run.sh
+#rm step*.pdb
+#rm \#*#
 
 
