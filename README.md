@@ -134,7 +134,7 @@ It is however, recommended not to backmap the waters and ions, but only the ND c
 For the GROMACS software the Backmap_re-solvate.sh script can be used.\
 Edit in the framed box within the script.
 
-# Wrapper scripts for automazation 
+# Wrapper scripts for automization 
 The COMMANDS_default and COMMANDS_Uni are both 'wrapper' bash scripts, which construct the nanodisc dimer using the python scripts and add lipids and solvate using insane.
 
 The COMMANDS_default uses the deafult settings:\
@@ -199,7 +199,7 @@ For constructing a circularized disc, the script Corr_itp_circularized.sh can be
 The itp file is one of the outputs from the Martinize script.\
 > ./Corr_itp_circularized.sh 1D1_A.itp
 
-### Automazation
+### Automization
 
 The COMMANDS_default and COMMANDS_uni script are wrapper scripts that can be adjusted to automize the above described process.\
 For defualt settings use the COMMANDS_default script. For more specific settings, the COMMANDS_uni script can be used.\
