@@ -173,18 +173,18 @@ Once the MSP dimer is constructed, lipids can be inserted with Insane, after coa
 > ./martinize -f 1D1_dimer.pdb -o 1D1_cg.top -x 1D1_cg.pdb -v -name 1D1 -ss $(cat ss.dat) -ff martini22 -p Backbone
 
 The ss.dat file is simply the secondary structure of the MSP defined as pure helix.\
-Can be constructed automaticly as such:\
+Can be constructed automaticly as such:
 > N=`grep -c CA 1D1_dimer.pdb`\
 > for i in `seq 1 $N`\
 > do\
-> echo -n 'H' >> ss.dat\
+> 	echo -n 'H' >> ss.dat\
 > done
 
 
 Next the lipids are inserted with the Insane script:\
 First an estimated radius of the disc is needed.\
-This can be obtained with the script:\
-> ./Calc_number_lipids.py -f 1D1.fasta -a 0.70 -p 0
+This can be obtained with the script:
+> ./Calc_number_lipids.py -f 1D1.fasta -a 0.70 -p 0\
 > r=`grep 'Radius' Suggestions.txt | awk -F ':' '{print $2}'`
 
 > insane -f 1D1_cg.pdb -o 1D1_cg-solvent.gro -p 1D1_cg-solvent.top -pbc cubic -x 15 -y 15 -z 15 -center -l POPC -disc ${r} -a 0.7 -ring -sol W -salt 0.15 -excl -1  
