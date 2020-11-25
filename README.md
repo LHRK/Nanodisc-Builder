@@ -17,6 +17,9 @@ It is recommended to make a virtual environment with eg Anaconda like so:
 > pip install insane\
 > conda deactivate
 
+
+And then save all the script in one folder, which path can be input in the below wrapper scripts for automzation. 
+
 ### Requirements
 Otherwise simply make sure to have installed the following modules:
 - numpy
