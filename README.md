@@ -201,11 +201,19 @@ The itp file is one of the outputs from the Martinize script.\
 
 ### Automization
 
-The COMMANDS_default and COMMANDS_uni script are wrapper scripts that can be adjusted to automize the above described process.\
-For defualt settings use the COMMANDS_default script. For more specific settings, the COMMANDS_uni script can be used.\
+The COMMANDS_default and COMMANDS_Uni script are wrapper scripts that can be adjusted to automize the above described process.\
+For defualt settings use the COMMANDS_default script. For more specific settings, the COMMANDS_Uni script can be used.\
 Settings are set within the scripts in the top.\
 
 ## An empty ND with complex lipid composition
+
+For constructing a ND with complex lipid composition, the Insane script can easily be adjusted and used.\
+Eg. for constructing a ND with 1:10 POPG:POPC lipids, the Insane command can be like so:\
+> insane -f 1D1_cg.pdb -o 1D1_cg-solvent.gro -p 1D1_cg-solvent.top -pbc cubic -x 15 -y 15 -z 15 -center -l POPC:90 -l POPG:10 -u POPC:90 -l POPG:10 -disc ${r} -a 0.7 -ring -sol W -salt 0.15 -excl -1
+
+The -l and -u flags are for lower and upper leaflet, respectively.\
+The COMMANDS_Uni script can be modified to accomidate this, by setting the flag lipid_type in the top of the script:\
+> lipid_type='-l POPC:90 -l POPG:10 -u POPC:90 -l POPG:10'
 
 ## A ND with a GPCR embedded - simple lipid composition
 
