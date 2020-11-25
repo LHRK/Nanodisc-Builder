@@ -216,6 +216,5 @@ The -l and -u flags are for lower and upper leaflet, respectively.\
 For automization, the COMMANDS_default and COMMANDS_Uni can be edited in the beginning of the file, to account for several lipid types in the disc.\
 Simply change the lipid_types and lipid_flag in the top of the scripts.
 
-## A ND with a GPCR embedded - simple lipid composition
 
 ## A ND with a GPCR embedded - complex lipid composition 
