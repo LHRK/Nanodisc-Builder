@@ -156,6 +156,40 @@ Hence the two leaflets can be constructed differently as well, by using the -l a
 
 ## A simple empty ND
 
+Constructing 1D1 with POPC lipids.
+
+> ./Build_MSP_monomer.py -f 1D1.fasta -o 1D1_monomer
+
+Assemble using default settings:
+
+>./Assemble_two_monomers.py -m 1D1_monomer.pdb -f 1D1.fasta -o 1D1_dimer -w
+
+Assemble using specific settings, using tandem H5, with an RR interface and 10 angstrom space between the two MSP monomers.
+
+>./Assemble_two_monomers.py -m 1D1_monomer.pdb -f 1D1.fasta -o 1D1_dimer -H 'H5' -t 10 --if RR
+
+Once the MSP dimer is constructed, lipids can be inserted with Insane, after coarse graining the MSP dimer with the martinize script. 
+
+> ./martinize -f 1D1_dimer.pdb -o 1D1_cg.top -x 1D1_cg.pdb -v -name 1D1 -ss $(cat ss.dat) -ff martini22 -p Backbone
+
+The ss.dat file is simply the secondary structure of the MSP defined as pure helix.\
+Can be constructed automaticly as such:\
+> N=`grep -c CA 1D1_dimer.pdb`\
+> for i in `seq 1 $N`\
+> do\
+> echo -n 'H' >> ss.dat\
+> done
+
+
+Next the lipids are inserted with the Insane script:\
+First an estimated radius of the disc is needed.\
+This can be obtained with the script:\
+> ./Calc_number_lipids.py -f 1D1.fasta -a 0.70 -p 0
+> r=`grep 'Radius' Suggestions.txt | awk -F ':' '{print $2}'`
+
+> insane -f 1D1_cg.pdb -o 1D1_cg-solvent.gro -p 1D1_cg-solvent.top -pbc cubic -x 15 -y 15 -z 15 -center -l POPC -disc ${r} -a 0.7 -ring -sol W -salt 0.15 -excl -1  
+
+
 ## An empty ND with complex lipid composition
 
 ## A ND with a GPCR embedded - simple lipid composition
