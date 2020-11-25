@@ -24,7 +24,7 @@ Oterwise simply make sure to have installed the following modules:\
 
 
 and possibly insane as well:
-> pip install insane\
+> pip install insane
 
 Insane is however, only compatible with python 2.7, as is the martinize script as well. 
 
