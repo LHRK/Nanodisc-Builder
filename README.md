@@ -35,11 +35,12 @@ Insane is however, only compatible with python 2.7, as is the martinize script.
 
 
 # Python version
-The python script:
+Python scripts for constructing MSPs:
 - Build_MSP_monomer.py
 - Assemble_two_monomers.py
 - Calc_number_lipids.py\
-are all compatible with python2.7 and python3
+
+They are all compatible with python2.7 and python3
 
 The Insane and Martinize scripts are however only compatible in python2.7. 
 The Martinize script can also be found at the github page: https://github.com/cgmartini/martinize.py, where a python 3 version is avaliable upon request. 
