@@ -82,6 +82,8 @@ Eg\
 The -a flag is the APL estimate for the lipid type in Angstrom. This is only for single lipid mixtures.\
 The -p flag is the approximate transmembrane area, which will be occupied by a possible membrane protein in the ND.  
 
+The script output a Suggestions.txt file with an estimated radius of the disc, along with estimated number of lipids er leaflet, based on the given APL.
+
 ### Mixed lipid compositions and embedding of membrane protein 
 Insane can be used for mixed lipid compositions in the ND, but with and without a possible embedded membrane protein. 
 
