@@ -211,7 +211,9 @@ For constructing a ND with complex lipid composition, the Insane script can easi
 Eg. for constructing a ND with 1:10 POPG:POPC lipids, the Insane command can be like so:\
 > insane -f 1D1_cg.pdb -o 1D1_cg-solvent.gro -p 1D1_cg-solvent.top -pbc cubic -x 15 -y 15 -z 15 -center -l POPC:90 -l POPG:10 -u POPC:90 -l POPG:10 -disc ${r} -a 0.7 -ring -sol W -salt 0.15 -excl -1
 
-The -l and -u flags are for lower and upper leaflet, respectively.
+The -l and -u flags are for lower and upper leaflet, respectively.\
+For automization, the COMMANDS_default and COMMANDS_Uni can be edited in the beginning of the file, to account for several lipid types in the disc.\
+Simply change the lipid_types and lipid_flag in the top of the scripts.
 
 ## A ND with a GPCR embedded - simple lipid composition
 
