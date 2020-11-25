@@ -1,5 +1,6 @@
 # Genereic protocol for constructing Nanodiscs in silico
-Protocol for constructing nanodiscs in silico
+The protocol introduces a novel approach for constructing MSPs in silico.
+Integrated with Insane and Martinize scripts, the protocol can be used to easily constructe nanodisc systems.
 
 ## Installation 
 It is recommended to make a virtual environment with eg Anaconda like so:  
