@@ -99,10 +99,10 @@ The script martinize and insane can then following be used for coarse graining t
 
 For insane an estimated radius of the ND is needed.\
 This can be calculated with the python script
-> ./Calc_number_lipids.py -h\
+> ./Calc_number_lipids.py -h
 
 
-Eg\
+Eg
 
 
 > ./Calc_number_lipids.py -f base.fasta -a 70 -p 0  
