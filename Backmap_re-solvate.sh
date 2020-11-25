@@ -3,20 +3,27 @@
 ### Bash script for backmapping the Nanodisc, re-solvate and neutralize using gromacs followed by a two step minimization
 ### If perfered, the initram.sh script can also be applied
 
-scirpt_dir='/home/au447022/Documents/GU/ND/Building/SCIPTS' #directory containing the scripts and mdp files
+scirpt_dir='PATH/SCRIPTS' #directory containing the scripts and mdp files
 
 cp ${script_dir}/MDP_FILES_AA/*.mdp .
 cp -r ${script_dir}/Mapping .
 cp ${script_dir}/backward.py .
 
-base='2N5E' #Base name of the system
-lipid_type='DLPC' # in the coarse grained structure for grep
-lipid_type_AA='DMPC' # The lipid type for backmapping
 
-# The dimensions for the Box
-x_len=15
-y_len=15
-z_len=13
+############### STUFF TO EDIT ###################################
+                                                                #
+base='2N5E' #Base name of the system                            #
+lipid_type='DLPC' # in the coarse grained structure for grep    #
+lipid_type_AA='DMPC' # The lipid type for backmapping           #
+                                                                #
+# The dimensions for the Box                                    #
+x_len=15                                                        #
+y_len=15                                                        #
+z_len=13                                                        #
+## NB                                                           #
+#It is assumed that the CG input file is named base_cg.gro      #
+                                                                #
+#################################################################
 
 gmx editconf -f ${base}_cg.gro -o ${base}_cg.pdb
 # Grep only protein and membrane

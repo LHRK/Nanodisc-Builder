@@ -1,0 +1,22 @@
+define                   = -DPOSRES
+integrator               = md
+nsteps                   = 500
+dt                       = 0.0002
+pbc                      = xyz
+
+rcoulomb                 = 0.9
+rlist                    = 0.9
+rvdw                     = 0.9
+
+tcoupl                   = v-rescale
+ref_t                    = 200
+tau_t                    = 0.1
+tc_grps                  = System
+
+gen_vel                  = yes
+gen_temp                 = 300
+
+constraints              = all-bonds
+
+nstxtcout                = 0
+

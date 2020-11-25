@@ -1,0 +1,22 @@
+
+define=-DFLEXIBLE
+integrator=steep
+nsteps=1000
+emstep=0.1
+pbc=xyz
+
+; Table extension is needed initially 
+table-extension=2
+
+; During first steps nonbonded interactions
+; are excluded within groups membrane and protein
+energygrps=Protein Membrane Solvent
+energygrp_excl=Protein Protein Membrane Membrane
+
+; for gmx5, need cutoff-scheme = Group to allow energy group exclusions
+cutoff-scheme = Group
+
+; Usually no trajectory is written, 
+; but this can be changed (-trj)
+nstxout=0
+
