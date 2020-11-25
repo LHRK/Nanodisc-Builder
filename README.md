@@ -154,7 +154,7 @@ Hence the two leaflets can be constructed differently as well, by using the -l a
 
 # Examples
 
-## A simple empty ND
+## An empty ND with simple lipid composition
 
 Constructing 1D1 with POPC lipids.
 
