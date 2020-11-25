@@ -6,7 +6,12 @@ It is recommended to make a virtual environment with eg Anaconda like so:
 
 > conda create -n ND_Builder python=2.7\
 > conda activate ND_Builder\
-> conda install numpy MDAnalysis rmsd Biopyhton argparse re os\
+> conda install numpy\
+> conda install mdanalysis\
+> conda install -c conda-forge rmsd\ 
+> conda install anaconda Biopython\
+> conda install argparse\
+> pip install os-sys\
 > pip install PeptideBuilder\
 > pip install insane\
 > conda deactivate
@@ -14,7 +19,7 @@ It is recommended to make a virtual environment with eg Anaconda like so:
 ### Requirements
 Otherwise simply make sure to have installed the following modules:
 - numpy
-- argsparse
+- argparse
 - os
 - re
 - MDAnalysis
