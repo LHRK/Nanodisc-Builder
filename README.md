@@ -207,8 +207,9 @@ Settings are set within the scripts in the top.
 
 ## An empty ND with complex lipid composition
 
-For constructing a ND with complex lipid composition, the Insane script can easily be adjusted and used.\
-Eg. for constructing a ND with 1:10 POPG:POPC lipids, the Insane command can be like so:\
+The MSP dimer is constructed as described in the above section 'An empty ND with simple lipid composition'.\
+Thereafter the insane script can easily be adjusted and used for complex lipid compositions.\
+Eg. for constructing a ND with 1:9 POPG:POPC lipids, the Insane command can be like so:
 > insane -f 1D1_cg.pdb -o 1D1_cg-solvent.gro -p 1D1_cg-solvent.top -pbc cubic -x 15 -y 15 -z 15 -center -l POPC:90 -l POPG:10 -u POPC:90 -l POPG:10 -disc ${r} -a 0.7 -ring -sol W -salt 0.15 -excl -1
 
 The -l and -u flags are for lower and upper leaflet, respectively.\
