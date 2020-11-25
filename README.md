@@ -11,6 +11,23 @@ It is recommended to make a virtual environment with eg Anaconda like so:
 > pip install insane\
 > conda deactivate
 
+### Requirements
+Oterwise simply make sure to have installed the following modules:\
+- numpy
+- argsparse
+- os
+- re
+- MDAnalysis
+- PeptideBuilder
+- Biopython
+- rmsd 
+
+
+and possibly insane as well:
+> pip install insane\
+Insane is however, only compatible with python 2.7, as is the martinize script as well. 
+
+
 # Python version
 The python script:
 - Build_MSP_monomer.py
