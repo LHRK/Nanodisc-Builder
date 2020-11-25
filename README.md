@@ -1,4 +1,4 @@
-# Nanodisc-Builder
+# Genereic protocol for constructing Nanodiscs in silico
 Protocol for constructing nanodiscs in silico
 
 ## Installation 
@@ -138,7 +138,7 @@ Interface as Left/Left 5/5, &\
 The distance between monomers as 12 Å
 
 Within the two 'wrapper' scripts settings are set in top.\
-Both scripts are for using the Martini and Charmm36 FF with the GROMACS simulation software.\
+Both scripts are for using the Martini and Charmm36 FF with the GROMACS simulation software.
 
 > ./COMMANDS_Uni --help\
 > ./COMMANDS_default --help
