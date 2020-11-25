@@ -94,13 +94,17 @@ H9 : PALEDLRQGLL\
 H10 : PVLESFKVSFLSALEEYTKKLNTQ
 
 
-## Coarse grain and insert lipid and possible a membrane protein
+## Coarse grain and insert lipids and possible a membrane protein
 The script martinize and insane can then following be used for coarse graining the MSP dimer and inserting lipids and possible a membrane protein.
 
 For insane an estimated radius of the ND is needed.\
 This can be calculated with the python script
 > ./Calc_number_lipids.py -h\
+
+
 Eg\
+
+
 > ./Calc_number_lipids.py -f base.fasta -a 70 -p 0  
 
 
