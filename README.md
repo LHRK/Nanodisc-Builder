@@ -48,13 +48,13 @@ For changing the registry the following flag can be used:\
 For changing the tandem or sequence to superimpose on the following flags can be used:\
 --r1\
 --r2\
--H\
+-H
 
 The -H flag can be used to select a tandem repeat for assembling the MSP dimer.\
 Eg. -H 'H1'\
 The avaliabel tandem repeats are listed below.\
 If the tandem repeat is not in the list, the flags --r1 and --r2 can be used to state the beginning and end resid of the desired tandem repeat.\
-Eg. --r1 105 --r2 115\
+Eg. --r1 105 --r2 115
 
 #### Tandem repeats
 H1 : LKLLDNWDSVTSTFSKLREQLG\
@@ -66,14 +66,14 @@ H6 : PLGEEMRDRARAHVDALRTHLA\
 H7 : PYSDELRQRLAARLEALKENGG\
 H8 : ARLAEYHAKATEHLSTLSEKAK\
 H9 : PALEDLRQGLL\
-H10 : PVLESFKVSFLSALEEYTKKLNTQ\
+H10 : PVLESFKVSFLSALEEYTKKLNTQ
 
 
 ## Coarse grain and insert lipid and possible a membrane protein
-The script martinize and insane can then following be used for coarse graining the MSP dimer and inserting lipids and possible a membrane protein.\
+The script martinize and insane can then following be used for coarse graining the MSP dimer and inserting lipids and possible a membrane protein.
 
 For insane an estimated radius of the ND is needed.\
-This can be calculated with the python script\ 
+This can be calculated with the python script
 > ./Calc_number_lipids.py -h\
 Eg\
 > ./Calc_number_lipids.py -f base.fasta -a 70 -p 0\
@@ -98,22 +98,22 @@ For the GROMACS software the Backmap_re-solvate.sh script can be used.\
 Edit in the framed box within the script.
 
 # Wrapper scripts for automazation 
-The COMMANDS_default and COMMANDS_Uni are both 'wrapper' bash scripts, which construct the nanodisc dimer using the python scripts and add lipids and solvate using insane.\
+The COMMANDS_default and COMMANDS_Uni are both 'wrapper' bash scripts, which construct the nanodisc dimer using the python scripts and add lipids and solvate using insane.
 
 The COMMANDS_default uses the deafult settings:\
 Interface as Left/Left 5/5, &\
-The distance between monomers as 12 Å\
+The distance between monomers as 12 Å
 
 Within the two 'wrapper' scripts settings are set in top.\
 Both scripts are for using the Martini and Charmm36 FF with the GROMACS simulation software.\
 
 > ./COMMANDS_Uni --help\
-> ./COMMANDS_default --help\
+> ./COMMANDS_default --help
 
 For using the wrapper scripts with more complex lipid compositions used the COMMANDS_Uni script and edit the option:\
 lipid_type='DLPC' in the script to eg. lipid_type='-l POPC:90 -l POPG:10 -u POPC:90 -l POPG:10'\ 
 This line will be given directly to insane, which will then insert 90% POPC and 10% POPG in both the lower (-l) and upper (-u) leaflet.\
-Hence the two leaflets can be constructed differently as well, by using the -l and -u flags provided to the insane script.\
+Hence the two leaflets can be constructed differently as well, by using the -l and -u flags provided to the insane script.
 
 # Examples
 
