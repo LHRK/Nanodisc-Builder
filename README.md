@@ -9,9 +9,7 @@ It is recommended to make a virtual environment with eg Anaconda like so:
 > conda install numpy MDAnalysis rmsd Biopyhton argparse re os\
 > pip install PeptideBuilder\
 > pip install insane\
-> conda deactivate\
-
-## Usage
+> conda deactivate
 
 # Python version
 The python script:
@@ -25,7 +23,9 @@ The Martinize script can also be found at the github page: https://github.com/cg
 
 For all the python scripts, additional flags and documentation can be viewed upon running the script with the flag -h. 
 
-# Constructing the atomistic MSP dimer 
+# Usage
+
+## Constructing the atomistic MSP dimer 
 Frist go into the generated virtual eenvironment.\
 > conda activate ND_Builder\
 
@@ -69,51 +69,51 @@ H9 : PALEDLRQGLL\
 H10 : PVLESFKVSFLSALEEYTKKLNTQ\
 
 
-# Coarse grain and insert lipid and possible a membrane protein
+## Coarse grain and insert lipid and possible a membrane protein
 The script martinize and insane can then following be used for coarse graining the MSP dimer and inserting lipids and possible a membrane protein.\
 
-For insane an estimated radius of the ND is needed.
-This can be calculated with the python script 
-> ./Calc_number_lipids.py -h
-Eg
-> ./Calc_number_lipids.py -f base.fasta -a 70 -p 0
-The -a flag is the APL estimate for the lipid type in Angstrom. This is only for single lipid mixtures.
+For insane an estimated radius of the ND is needed.\
+This can be calculated with the python script\ 
+> ./Calc_number_lipids.py -h\
+Eg\
+> ./Calc_number_lipids.py -f base.fasta -a 70 -p 0\
+The -a flag is the APL estimate for the lipid type in Angstrom. This is only for single lipid mixtures.\
 The -p flag is the approximate transmembrane area, which will be occupied by a possible membrane protein in the ND.  
 
-## Mixed lipid compositions and embedding of membrane protein 
+### Mixed lipid compositions and embedding of membrane protein 
 Insane can be used for mixed lipid compositions in the ND, but with and without a possible embedded membrane protein. 
 
-# Circularized NDs
-The script Corr_itp_circularized.sh is for correcting the itp file for the coarse grained MSP dimer, making sure the terminals are covalently linked together. 
+### Circularized NDs
+The script Corr_itp_circularized.sh is for correcting the itp file for the coarse grained MSP dimer, making sure the terminals are covalently linked together.\
 The format is for the GROMACS software. 
 
-# Minimization and equlibration
-The Run.sh script can be used for suggested steps of minimization and equlibration.
+## Minimization and equlibration
+The Run.sh script can be used for suggested steps of minimization and equlibration.\
 For GROMACS software version 2018.2 and up the Run_ver18.sh script is valid.  
 
-# Backmapping to atomistic
-For converting the coarse grained ND to atomistic scale the backward.py script can be used.
-It is however, recommended not to backmap the waters and ions, but only the ND complex and then re-solvate and neutralize. 
-For the GROMACS software the Backmap_re-solvate.sh script can be used. 
+## Backmapping to atomistic
+For converting the coarse grained ND to atomistic scale the backward.py script can be used.\
+It is however, recommended not to backmap the waters and ions, but only the ND complex and then re-solvate and neutralize.\
+For the GROMACS software the Backmap_re-solvate.sh script can be used.\
 Edit in the framed box within the script.
 
 # Wrapper scripts for automazation 
-The COMMANDS_default and COMMANDS_Uni are both 'wrapper' bash scripts, which construct the nanodisc dimer using the python scripts and add lipids and solvate using insane. 
+The COMMANDS_default and COMMANDS_Uni are both 'wrapper' bash scripts, which construct the nanodisc dimer using the python scripts and add lipids and solvate using insane.\
 
-The COMMANDS_default uses the deafult settings:
-Interface as Left/Left 5/5, &
-The distance between monomers as 12 Å
+The COMMANDS_default uses the deafult settings:\
+Interface as Left/Left 5/5, &\
+The distance between monomers as 12 Å\
 
-Within the two 'wrapper' scripts settings are set in top. 
-Both scripts are for using the Martini and Charmm36 FF with the GROMACS simulation software. 
+Within the two 'wrapper' scripts settings are set in top.\
+Both scripts are for using the Martini and Charmm36 FF with the GROMACS simulation software.\
 
-> ./COMMANDS_Uni --help
-> ./COMMANDS_default --help
+> ./COMMANDS_Uni --help\
+> ./COMMANDS_default --help\
 
-For using the wrapper scripts with more complex lipid compositions used the COMMANDS_Uni script and edit the option:
-lipid_type='DLPC' in the script to eg. lipid_type='-l POPC:90 -l POPG:10 -u POPC:90 -l POPG:10' 
-This line will be given directly to insane, which will then insert 90% POPC and 10% POPG in both the lower (-l) and upper (-u) leaflet. 
-Hence the two leaflets can be constructed differently as well, by using the -l and -u flags provided to the insane script. 
+For using the wrapper scripts with more complex lipid compositions used the COMMANDS_Uni script and edit the option:\
+lipid_type='DLPC' in the script to eg. lipid_type='-l POPC:90 -l POPG:10 -u POPC:90 -l POPG:10'\ 
+This line will be given directly to insane, which will then insert 90% POPC and 10% POPG in both the lower (-l) and upper (-u) leaflet.\
+Hence the two leaflets can be constructed differently as well, by using the -l and -u flags provided to the insane script.\
 
 # Examples
 
