@@ -189,6 +189,21 @@ This can be obtained with the script:
 
 > insane -f 1D1_cg.pdb -o 1D1_cg-solvent.gro -p 1D1_cg-solvent.top -pbc cubic -x 15 -y 15 -z 15 -center -l POPC -disc ${r} -a 0.7 -ring -sol W -salt 0.15 -excl -1  
 
+Next is minimization and equlibration.\
+The Run.sh or Run_ver18.sh can be used here, along with the suggested mdp files.\
+This is designed for the GROMACS software.\
+
+### Circularization 
+
+For constructing a circularized disc, the script Corr_itp_circularized.sh can be used to correct the itp file for the coarse grained MSP.\
+The itp file is one of the outputs from the Martinize script.\
+> ./Corr_itp_circularized.sh 1D1_A.itp
+
+### Automazation
+
+The COMMANDS_default and COMMANDS_uni script are wrapper scripts that can be adjusted to automize the above described process.\
+For defualt settings use the COMMANDS_default script. For more specific settings, the COMMANDS_uni script can be used.\
+Settings are set within the scripts in the top.\
 
 ## An empty ND with complex lipid composition
 
