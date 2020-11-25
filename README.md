@@ -12,7 +12,7 @@ It is recommended to make a virtual environment with eg Anaconda like so:
 > conda deactivate
 
 ### Requirements
-Oterwise simply make sure to have installed the following modules:\
+Otherwise simply make sure to have installed the following modules:
 - numpy
 - argsparse
 - os
@@ -26,7 +26,7 @@ Oterwise simply make sure to have installed the following modules:\
 and possibly insane as well:
 > pip install insane
 
-Insane is however, only compatible with python 2.7, as is the martinize script as well. 
+Insane is however, only compatible with python 2.7, as is the martinize script. 
 
 
 # Python version
@@ -39,6 +39,7 @@ are all compatible with python2.7 and python3
 The Insane and Martinize scripts are however only compatible in python2.7. 
 The Martinize script can also be found at the github page: https://github.com/cgmartini/martinize.py, where a python 3 version is avaliable upon request. 
 
+### Help - documentation
 For all the python scripts, additional flags and documentation can be viewed upon running the script with the flag -h. 
 
 # Usage
