@@ -26,24 +26,24 @@ For all the python scripts, additional flags and documentation can be viewed upo
 # Usage
 
 ## Constructing the atomistic MSP dimer 
-Frist go into the generated virtual eenvironment.\
-> conda activate ND_Builder\
+Frist go into the generated virtual eenvironment.
+> conda activate ND_Builder
 
 Use the Build_MSP_monomer.py to construc the MSP monomer given the fasta sequence.\
-The output structure may appear to have clashed at the kinks between the tandem repeats. This is however solved upon a minimization.\
+The output structure may appear to have clashed at the kinks between the tandem repeats. This is however solved upon a minimization.
 
-> ./Build_MSP_monomer.py -f base.fasta -o base\
+> ./Build_MSP_monomer.py -f base.fasta -o base
 
-For assembling the MSP dimer, use the Assemble_two_monomers.py script\
+For assembling the MSP dimer, use the Assemble_two_monomers.py script
 
-> ./Assemble_two_monomers.py -m base.pdb -f base.fasta -w\
+> ./Assemble_two_monomers.py -m base.pdb -f base.fasta -w
 
 For using default setting use the -w flag. This includes assembling the nanodisc with the LL5/5 registry, given the helix5 sequence is found in the input MSP sequence.\
-A distance of 12 Å between the MSP monomers is the default setting.\
+A distance of 12 Å between the MSP monomers is the default setting.
 
 For changing the registry the following flag can be used:\
 --if : for selecting either LL (left-left) or RR (right-right) registry\
--t   : Changes the distance between the two MSP monomers i Angstrom. Default is 12 Å.\
+-t   : Changes the distance between the two MSP monomers i Angstrom. Default is 12 Å.
 
 For changing the tandem or sequence to superimpose on the following flags can be used:\
 --r1\
@@ -76,7 +76,9 @@ For insane an estimated radius of the ND is needed.\
 This can be calculated with the python script
 > ./Calc_number_lipids.py -h\
 Eg\
-> ./Calc_number_lipids.py -f base.fasta -a 70 -p 0\
+> ./Calc_number_lipids.py -f base.fasta -a 70 -p 0  
+
+
 The -a flag is the APL estimate for the lipid type in Angstrom. This is only for single lipid mixtures.\
 The -p flag is the approximate transmembrane area, which will be occupied by a possible membrane protein in the ND.  
 
@@ -111,7 +113,7 @@ Both scripts are for using the Martini and Charmm36 FF with the GROMACS simulati
 > ./COMMANDS_default --help
 
 For using the wrapper scripts with more complex lipid compositions used the COMMANDS_Uni script and edit the option:\
-lipid_type='DLPC' in the script to eg. lipid_type='-l POPC:90 -l POPG:10 -u POPC:90 -l POPG:10'\ 
+lipid_type='DLPC' in the script to eg. lipid_type='-l POPC:90 -l POPG:10 -u POPC:90 -l POPG:10'   
 This line will be given directly to insane, which will then insert 90% POPC and 10% POPG in both the lower (-l) and upper (-u) leaflet.\
 Hence the two leaflets can be constructed differently as well, by using the -l and -u flags provided to the insane script.
 
