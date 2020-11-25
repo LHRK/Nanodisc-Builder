@@ -17,11 +17,11 @@ interface='LL' #LL = Left-Left interface or RR for Right-Right interface.
 x_len=15 #Size of the box in nm
 y_len=15
 z_len=15
-lipid_type='DLPC' # lipid type. The script insane.py insert the lipids
-#r=3.3 # Radius of the phosphorlipid bilayer in the nanodisc
+lipid_types='POPC POPG' # lipid types
+lipid_flag='-l POPC:90 -l POPG:10 -u POPC:90 -u POPG:10' # flag for insane. The -l and -u flags are for lower and upper leaflet, respectively. Here POPC and POPG are inserted in a 9:1 ratio. 
 apl=0.59 # Area per lipid in nm² for use in insane
 asym_corr=0 # Use for correting the amount of lipids in each leaflet, if insane dose not inseret the same amount in each leaflet. 
-script_dir='/home/au447022/Documents/GU/ND/Building/SCIPTS' # Directory for where all the scripts, force field parameters and mdp files are located. 
+script_dir='PATH/SCRIPTS' # Directory for where all the scripts, force field parameters and mdp files are located. 
 
 ########################
 # Reads in flags
@@ -105,10 +105,12 @@ sed -i "2i #include \"${base}_AA.itp\"" ${base}_AA.top
 
 cp ${base}_AA.top ${base}_AA_nowat.top
 
-
-sed -i "3i #include \"$lipid_type.itp\"" ${base}_AA.top
-sed -i "4i #include \"charmm36.ff/tip3p.itp\"" ${base}_AA.top
-sed -i "5i #include \"charmm36.ff/ions.itp\"" ${base}_AA.top
+for lipid in "${lipid_types[@]}"
+do
+	sed -i "3i #include \"$lipid.itp\"" ${base}_AA.top
+	sed -i "4i #include \"charmm36.ff/tip3p.itp\"" ${base}_AA.top
+	sed -i "5i #include \"charmm36.ff/ions.itp\"" ${base}_AA.top
+done
 
 gmx editconf -f ${base}_dimer_assembled.pdb -box ${x_len} ${y_len} ${x_len} -o ${base}_dimer_box.pdb
 AA_struc="${base}_dimer_box.pdb"
@@ -145,8 +147,8 @@ then
 fi
 
 ############# Adding lipids, water and NaCl ##########################
-echo "insane -f ${base}_cg.pdb -o ${base}_cg-solvent.gro -p ${base}_cg-solvent.top -pbc cubic -x ${x_len} -y ${y_len} -z ${z_len} -center -l ${lipid_type} -disc ${r} -a ${apl} -ring -sol ${W_name} -salt 0.15 -excl -1 -asym ${asym_corr}"
-insane -f ${base}_cg.pdb -o ${base}_cg-solvent.gro -p ${base}_cg-solvent.top -pbc cubic -x ${x_len} -y ${y_len} -z ${z_len} -center -l ${lipid_type} -disc ${r} -a ${apl} -ring -sol ${W_name} -salt 0.15 -excl -1 -asym ${asym_corr}
+echo "insane -f ${base}_cg.pdb -o ${base}_cg-solvent.gro -p ${base}_cg-solvent.top -pbc cubic -x ${x_len} -y ${y_len} -z ${z_len} -center ${lipid_flag} -disc ${r} -a ${apl} -ring -sol ${W_name} -salt 0.15 -excl -1 -asym ${asym_corr}"
+insane -f ${base}_cg.pdb -o ${base}_cg-solvent.gro -p ${base}_cg-solvent.top -pbc cubic -x ${x_len} -y ${y_len} -z ${z_len} -center  ${lipid_flag} -disc ${r} -a ${apl} -ring -sol ${W_name} -salt 0.15 -excl -1 -asym ${asym_corr}
 
 #####################################################################
 
