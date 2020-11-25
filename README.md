@@ -154,7 +154,7 @@ Hence the two leaflets can be constructed differently as well, by using the -l a
 
 # Examples
 
-## An empty ND with simple lipid composition
+## An empty ND (lipid only ND) with simple lipid composition
 
 Constructing 1D1 with POPC lipids.
 
@@ -205,7 +205,7 @@ The COMMANDS_default and COMMANDS_Uni script are wrapper scripts that can be adj
 For defualt settings use the COMMANDS_default script. For more specific settings, the COMMANDS_Uni script can be used.\
 Settings are set within the scripts in the top.
 
-## An empty ND with complex lipid composition
+## An empty ND (lipid only ND) with complex lipid composition
 
 The MSP dimer is constructed as described in the above section 'An empty ND with simple lipid composition'.\
 Thereafter the insane script can easily be adjusted and used for complex lipid compositions.\
