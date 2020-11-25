@@ -8,7 +8,7 @@ It is recommended to make a virtual environment with eg Anaconda like so:
 > conda activate ND_Builder\
 > conda install numpy\
 > conda install mdanalysis\
-> conda install -c conda-forge rmsd\ 
+> conda install -c conda-forge rmsd\
 > conda install anaconda Biopython\
 > conda install argparse\
 > pip install os-sys\
