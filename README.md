@@ -5,10 +5,15 @@ Protocol for constructing nanodiscs in silico
 It is recommended to make a virtual environment with eg Anaconda like so:
 
 > conda create -n ND_Builder python=2.7
+\n
 > conda activate ND_Builder
+\n
 > conda install numpy MDAnalysis rmsd Biopyhton argparse re os
+\n
 > pip install PeptideBuilder 
+\n
 > pip install insane
+\n
 > conda deactivate
 
 ## Usage
@@ -28,11 +33,16 @@ For all the python scripts, additional flags and documentation can be viewed upo
 # Constructing the atomistic MSP dimer 
 Frist go into the generated virtual eenvironment. 
 > conda activate ND_Builder
+
 Use the Build_MSP_monomer.py to construc the MSP monomer given the fasta sequence.
 The output structure may appear to have clashed at the kinks between the tandem repeats. This is however solved upon a minimization.  
+
 > ./Build_MSP_monomer.py -f base.fasta -o base
+
 For assembling the MSP dimer, use the Assemble_two_monomers.py script
+
 > ./Assemble_two_monomers.py -m base.pdb -f base.fasta -w 
+
 For using default setting use the -w flag. This includes assembling the nanodisc with the LL5/5 registry, given the helix5 sequence is found in the input MSP sequence.
 A distance of 12 Å between the MSP monomers is the default setting. 
 
