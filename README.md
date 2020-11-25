@@ -18,7 +18,7 @@ It is recommended to make a virtual environment with eg Anaconda like so:
 > conda deactivate
 
 
-And then save all the script in one folder, which path can be input in the below wrapper scripts for automzation. 
+And then save all the scripts in one folder, which path can be input in the below wrapper scripts for automzation. 
 
 ### Requirements
 Otherwise simply make sure to have installed the following modules:
@@ -55,7 +55,7 @@ For all the python scripts, additional flags and documentation can be viewed upo
 # Usage
 
 ## Constructing the atomistic MSP dimer 
-Frist go into the generated virtual eenvironment.
+Frist go into the generated virtual environment.
 > conda activate ND_Builder
 
 Use the Build_MSP_monomer.py to construc the MSP monomer given the fasta sequence.\
