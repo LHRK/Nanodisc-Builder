@@ -8,11 +8,11 @@ It is recommended to make a virtual environment with eg Anaconda like so:
 > conda create -n ND_Builder python=2.7\
 > conda activate ND_Builder\
 > conda install numpy\
+> conda config --add channels conda-forge\
 > conda install mdanalysis\
 > conda install -c conda-forge rmsd\
-> conda install anaconda Biopython\
+> conda install Biopython\
 > conda install argparse\
-> pip install os-sys\
 > pip install PeptideBuilder\
 > pip install insane\
 > conda deactivate
@@ -218,3 +218,12 @@ Simply change the lipid_types and lipid_flag in the top of the scripts.
 
 
 ## A ND with a GPCR embedded - complex lipid composition 
+
+For embedding a membrane protein (MP) into a ND three additional steps are required.\
+1) The MP is prepared, aligned, and coarse grained.\
+2) The MSP dimer is constructed with the python scripts, as instructed above.>
+3) Both the coarse grained MP and MSP are each centered in the desired box using eg. the GROMACS software.\
+4) The MP is inserted into the MSP dimer, by simply combining the two centered pdb files, created above.\
+5) Insane can then be used on the MP_MSP complex to insert the lipids, solvate, and neutralize.\
+
+For automization purposes, the COMMANDS_default script contain the possiblity to set the MP input file and name, for embedding in the ND.\
