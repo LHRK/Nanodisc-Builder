@@ -5,7 +5,7 @@ Integrated with Insane and Martinize scripts, the protocol can be used to easily
 ## Installation 
 It is recommended to make a virtual environment with eg Anaconda like so:  
 
-> conda create -n ND_Builder python=2.7\
+> conda create -n ND_Builder\
 > conda activate ND_Builder\
 > conda install numpy\
 > conda config --add channels conda-forge\
@@ -14,7 +14,6 @@ It is recommended to make a virtual environment with eg Anaconda like so:
 > conda install Biopython\
 > conda install argparse\
 > pip install PeptideBuilder\
-> pip install insane\
 > conda deactivate
 
 
@@ -36,6 +35,7 @@ and possibly insane as well:
 > pip install insane
 
 Insane is however, only compatible with python 2.7, as is the martinize script. 
+Both Insane and martinize can be used as scripts as well
 
 
 # Python version
