@@ -17,7 +17,7 @@ interface='LL' #LL = Left-Left interface or RR for Right-Right interface.
 x_len=15 #Size of the box in nm
 y_len=15
 z_len=15
-lipid_types='POPC POPG' # lipid types
+lipid_types=(POPC POPG) # lipid types
 lipid_flag='-l POPC:90 -l POPG:10 -u POPC:90 -u POPG:10' # flag for insane. The -l and -u flags are for lower and upper leaflet, respectively. Here POPC and POPG are inserted in a 9:1 ratio. 
 apl=0.59 # Area per lipid in nm² for use in insane
 asym_corr=0 # Use for correting the amount of lipids in each leaflet, if insane dose not inseret the same amount in each leaflet. 
@@ -63,6 +63,8 @@ fi
 
 ########################
 # Assesing the radius of the disc
+
+source activate ND_Builder
 
 # The python provides a Suggesting.txt file, with approximate radius 
 cp ${script_dir}/Calc_number_lipids.py .
@@ -124,6 +126,10 @@ for i in `seq 1 $N`
 do
 echo -n 'H' >> ss.dat
 done
+
+
+source deactivate 
+source activate CG_env
 
 ################ Coarse graining ######################################
 source activate py.27
@@ -354,7 +360,7 @@ fi
 	sed -i "s/protein/Protein/g" *.mdp 
 
 
-
+source deactivate
 
 ############# Minimazing and equlibrating CG ##########################
 #./Run.sh

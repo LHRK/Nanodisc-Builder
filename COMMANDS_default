@@ -10,7 +10,7 @@
 export base='1D1' #Base name for the system / Nanodisc
 FF='martini22' #martini22 or martini_3.0.b.3.2/martini303v.partition
 fasta="${base}.fasta" 
-x_len=15 #Size of the box in nm
+x_len=15 #Size of the box in nm, assumed cubic
 y_len=15
 z_len=15
 lipid_types=(POPC POPG) # lipid types
@@ -19,7 +19,7 @@ apl=0.7 # Area per lipid in nm² for use in insane
 asym_corr=0 # Use for correting the amount of lipids in each leaflet, if insane dose not inseret the same amount in each leaflet. 
 MP='GCGR' #set to None if lipid-only disc, otherwise name for the MP. Used for output files
 MP_input='GCGR_cg.pdb' #input coarse grained file of the MP. 
-script_dir='/home/au447022/Documents/GU/ND/Building/SCIPTS' # Directory for where all the scripts, force field parameters and mdp files are located. 
+script_dir='PATH/SCRIPTS' # Directory for where all the scripts, force field parameters and mdp files are located. 
 
 ########################
 # Reads in flags
@@ -47,6 +47,9 @@ fi
 
 ########################
 # Assesing the radius of the disc
+
+source activate ND_Builder
+
 
 # The python provides a Suggesting.txt file, with approximate radius 
 cp ${script_dir}/Calc_number_lipids.py .
@@ -124,6 +127,9 @@ for i in `seq 1 $N`
 do
 echo -n 'H' >> ss.dat
 done
+
+source deactivate
+source activate CG_env
 
 ################ Coarse graining ######################################
 source activate py.27
@@ -351,9 +357,10 @@ fi
 	sed -i "s/lipid/${lipid_type}/g" *.mdp
 	sed -i "s/protein/Protein/g" *.mdp 
 
+source deactivate
+
 ############# Minimazing and equlibrating CG ##########################
 #./Run.sh
 #rm step*.pdb
 #rm \#*#
 #
-#source deactivate
