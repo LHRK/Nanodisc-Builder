@@ -227,4 +227,4 @@ For embedding a membrane protein (MP) into a ND additional steps are required.
 5) Insane can then be used on the MP_MSP complex to insert the lipids, solvate, and neutralize.
 
 For automization purposes, the COMMANDS_default script contain the possiblity to set the MP input file and name, for embedding in the ND.\
-The GCGR_cg.pdb file is avaliable here on the, for testing purposes. 
+The GCGR_cg.pdb file is avaliable here on the side for testing purposes. 
