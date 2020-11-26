@@ -16,6 +16,12 @@ It is recommended to make a virtual environment with eg Anaconda like so:
 > pip install PeptideBuilder\
 > conda deactivate
 
+Make a virtual environment for Insane and martinize\
+> conda create -n CG_env Python=2.7\
+> conda activate CG_env\
+> conda install numpy\
+> conda install insane\
+> conda deactivate\
 
 And then save all the scripts in one folder, which path can be input in the below wrapper scripts for automzation. 
 
