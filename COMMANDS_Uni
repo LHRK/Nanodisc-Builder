@@ -17,7 +17,7 @@ interface='LL' #LL = Left-Left interface or RR for Right-Right interface.
 x_len=15 #Size of the box in nm
 y_len=15
 z_len=15
-lipid_types='POPC POPG' # lipid types
+lipid_types=(POPC POPG) # lipid types
 lipid_flag='-l POPC:90 -l POPG:10 -u POPC:90 -u POPG:10' # flag for insane. The -l and -u flags are for lower and upper leaflet, respectively. Here POPC and POPG are inserted in a 9:1 ratio. 
 apl=0.59 # Area per lipid in nm² for use in insane
 asym_corr=0 # Use for correting the amount of lipids in each leaflet, if insane dose not inseret the same amount in each leaflet. 
@@ -153,44 +153,68 @@ insane -f ${base}_cg.pdb -o ${base}_cg-solvent.gro -p ${base}_cg-solvent.top -pb
 #####################################################################
 
 # For adding it to the AA top file
-count_lipids=0
-for i in `grep "$lipid_type " ${base}_cg-solvent.top | gawk '{print $2}'`
+
+
+line_start=`grep -n "$base " ${base}_AA.top | gawk -F ':' '{print $1}'`
+line=$((line_start))
+echo $line
+
+for lipid_type in "${lipid_types[@]}"
 do
-count_lipids=$((count_lipids+i))
+        # For adding it to the AA top file
+        count_lipids=0
+        for i in `grep "$lipid_type " ${base}_cg-solvent.top | gawk '{print $2}'`
+        do
+        count_lipids=$((count_lipids+i))
+        done
+
+        sed -i "${line}i $lipid_type     $count_lipids" ${base}_AA.top
+        line=$((line+1))
+
 done
 
-line=`grep -n "$base " ${base}_AA.top | gawk -F ':' '{print $1}'`
-line=$((line+1))
 
-sed -i "${line}i $lipid_type     $count_lipids" ${base}_AA.top
+sed -i "${line_start}i ${base}    2" ${base}_AA.top
+sed -i '$d' ${base}_AA.top
 
 #Correcting the names of the ions in the gro file
 #updating the top file with the correct names and itp files
 
 if [ "$FF" = "martini22" ]
-then 
+then
 sed -i 's/"martini.itp"/"martini_v2.2.itp"/' ${base}_cg-solvent.top
 sed -i "2i #include \"${base}_A.itp\"" ${base}_cg-solvent.top
-sed -i "4i #include \"${lipid_type}.itp\"" ${base}_cg-solvent.top
-sed -i '5i #include "martini_v2.0_solvents.itp"' ${base}_cg-solvent.top
-sed -i '6i #include "martini_v2.0_ions.itp"' ${base}_cg-solvent.top
+sed -i '3i #include "martini_v2.0_solvents.itp"' ${base}_cg-solvent.top
+sed -i '4i #include "martini_v2.0_ions.itp"' ${base}_cg-solvent.top
 sed -i "s/Protein/${base}_A/" ${base}_cg-solvent.top
-sed -i "15i ${base}_A          1" ${base}_cg-solvent.top
+sed -i "14i ${base}_A          1" ${base}_cg-solvent.top
 
-	elif [ "$FF" != "martini22" ]
-	then
-	sed -i 's/NA+/TNA/g' ${base}_cg-solvent.gro
-	sed -i 's/CL-/TCL/g' ${base}_cg-solvent.gro
-	sed -i 's/"martini.itp"/"martini_3.0.b.3.2\/martini_v3.0.b.3.2.itp"/' ${base}_cg-solvent.top
-	sed -i "2i #include \"${base}_A.itp\"" ${base}_cg-solvent.top
-	sed -i '4i #include "martini_3.0.b.3.2/martini_v3.0_phospholipids.itp"' ${base}_cg-solvent.top
-	sed -i '5i #include "martini_3.0.b.3.2/martini_v3.0_solvents.itp"' ${base}_cg-solvent.top
-	sed -i '6i #include "martini_3.0.b.3.2/martini_v3.0_ions.itp"' ${base}_cg-solvent.top
-	sed -i "s/Protein/${base}_A/" ${base}_cg-solvent.top
-	sed -i "15i ${base}_A          1" ${base}_cg-solvent.top
-	sed -i 's/NA+/TNA/' ${base}_cg-solvent.top
-	sed -i 's/CL-/TCL/' ${base}_cg-solvent.top
+        elif [ "$FF" != "martini22" ]
+        then
+        sed -i 's/NA+/TNA/g' ${base}_cg-solvent.gro
+        sed -i 's/CL-/TCL/g' ${base}_cg-solvent.gro
+        sed -i 's/"martini.itp"/"martini_3.0.b.3.2\/martini_v3.0.b.3.2.itp"/' ${base}_cg-solvent.top
+        sed -i "2i #include \"${base}_A.itp\"" ${base}_cg-solvent.top
+        sed -i '4i #include "martini_3.0.b.3.2/martini_v3.0_phospholipids.itp"' ${base}_cg-solvent.top
+        sed -i '5i #include "martini_3.0.b.3.2/martini_v3.0_solvents.itp"' ${base}_cg-solvent.top
+        sed -i '6i #include "martini_3.0.b.3.2/martini_v3.0_ions.itp"' ${base}_cg-solvent.top
+        sed -i "s/Protein/${base}_A/" ${base}_cg-solvent.top
+        sed -i "15i ${base}_A          1" ${base}_cg-solvent.top
+        sed -i 's/NA+/TNA/' ${base}_cg-solvent.top
+        sed -i 's/CL-/TCL/' ${base}_cg-solvent.top
 fi
+
+
+line=5
+if [ "$FF" = "martini22" ]
+then
+        for lipid_type in "${lipid_types[@]}"
+        do
+                sed -i "${line}i #include \"${lipid_type}.itp\"" ${base}_cg-solvent.top
+                line=$((line+1))
+        done
+fi
+
 
 cp ${script_dir}/MDP_FILES_CG/*.mdp .
 cp ${script_dir}/Martini_lipid_itps/${lipid_type}.itp .
