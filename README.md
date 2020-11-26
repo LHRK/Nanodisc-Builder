@@ -21,7 +21,7 @@ Make a virtual environment for Insane and martinize\
 > conda activate CG_env\
 > conda install numpy\
 > conda install insane\
-> conda deactivate\
+> conda deactivate
 
 And then save all the scripts in one folder, which path can be input in the below wrapper scripts for automzation. 
 
