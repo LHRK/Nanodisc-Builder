@@ -19,11 +19,9 @@ It is recommended to make a virtual environment with eg Anaconda like so:
 Make a virtual environment for Insane and martinize
 > conda create -n CG_env Python=2.7\
 > conda activate CG_env\
-> conda install numpy\
 > pip install insane\
 > conda deactivate
 
-And then save all the scripts in one folder, which path can be input in the below wrapper scripts for automization. 
 
 ### Requirements
 Otherwise simply make sure to have installed the following modules:
@@ -41,7 +39,6 @@ and possibly insane as well:
 > pip install insane
 
 Insane is however, only compatible with python 2.7, as is the martinize script. 
-Both Insane and martinize can be used as scripts as well
 
 
 # Supported python versions
@@ -55,7 +52,8 @@ The Insane and Martinize scripts are however only compatible in python2.7.
 The Martinize script can also be found at the github page: https://github.com/cgmartini/martinize.py, where a python 3 version is avaliable upon request. 
 
 ### Help - documentation
-For all the python scripts, additional flags and documentation can be viewed upon running the script with the flag -h. 
+For all the python scripts, additional flags and documentation can be viewed upon running the script with the flag -h.\
+For the 'wrapper' scripts the flag --help can be used.
 
 # Usage
 
@@ -63,7 +61,7 @@ For all the python scripts, additional flags and documentation can be viewed upo
 Frist go into the generated virtual environment.
 > conda activate ND_Builder
 
-Use the Build_MSP_monomer.py to construc the MSP monomer given the fasta sequence.\
+Use the Build_MSP_monomer.py to construct the MSP monomer given the fasta sequence.\
 The output structure may appear to have clashed at the kinks between the tandem repeats. This is however solved upon a minimization.
 
 > ./Build_MSP_monomer.py -f base.fasta -o base
@@ -82,7 +80,8 @@ For changing the registry the following flag can be used:\
 For changing the tandem or sequence to superimpose on the following flags can be used:\
 --r1\
 --r2\
--H
+-H\
+When using either the --r1, --r2, or -H flags, the -f flad is needed as well, providing the fasta file.
 
 The -H flag can be used to select a tandem repeat for assembling the MSP dimer.\
 Eg. -H 'H1'\
@@ -108,22 +107,13 @@ The script martinize and insane can then following be used for coarse graining t
 
 For insane an estimated radius of the ND is needed.\
 This can be calculated with the python script
-> ./Calc_number_lipids.py -h
 
+> ./Calc_number_lipids.py -f base.fasta 
 
-Eg
-
-
-> ./Calc_number_lipids.py -f base.fasta -a 70 -p 0  
-
-
-The -a flag is the APL estimate for the lipid type in Angstrom. This is only for single lipid mixtures.\
-The -p flag is the approximate transmembrane area, which will be occupied by a possible membrane protein in the ND.  
-
-The script output a Suggestions.txt file with an estimated radius of the disc, along with estimated number of lipids er leaflet, based on the given APL.
+The script output a Suggestions.txt file with an estimated radius of the disc.
 
 ### Mixed lipid compositions and embedding of membrane protein 
-Insane can be used for mixed lipid compositions in the ND, but with and without a possible embedded membrane protein. 
+Insane can be used for mixed lipid compositions in the ND, both with and without a possible embedded membrane protein. 
 
 ### Circularized NDs
 The script Corr_itp_circularized.sh is for correcting the itp file for the coarse grained MSP dimer, making sure the terminals are covalently linked together.\
@@ -153,7 +143,7 @@ Both scripts are for using the Martini and Charmm36 FF with the GROMACS simulati
 > ./COMMANDS_default --help
 
 For using the wrapper scripts with more complex lipid compositions used the COMMANDS_Uni script and edit the option:\
-lipid_type='DLPC' in the script to eg. lipid_type='-l POPC:90 -l POPG:10 -u POPC:90 -l POPG:10'   
+lipid_flag='DLPC' in the script to eg. lipid_flag='-l POPC:90 -l POPG:10 -u POPC:90 -l POPG:10', along with the lipid_types=(POPC POPG).\
 This line will be given directly to insane, which will then insert 90% POPC and 10% POPG in both the lower (-l) and upper (-u) leaflet.\
 Hence the two leaflets can be constructed differently as well, by using the -l and -u flags provided to the insane script.
 
@@ -162,7 +152,8 @@ Hence the two leaflets can be constructed differently as well, by using the -l a
 ## 1) Lipid only ND with simple lipid composition
 
 Constructing 1D1 with POPC lipids.\
-Go into the directory called Example1\
+Go into the directory called Example1_simple_lipid_composition\
+All of the below commands are embedded in the COMMANDS_default script as well.\
 
 > conda activate ND_Builder
 
@@ -199,7 +190,7 @@ NB. If martinize comes with an error, "can't divide with zero", run the pdb thro
 Next the lipids are inserted with the Insane script:\
 First an estimated radius of the disc is needed.\
 This can be obtained with the script:
-> ./Calc_number_lipids.py -f 1D1.fasta -a 0.70 -p 0\
+> ./Calc_number_lipids.py -f 1D1.fasta\
 > r=\`grep 'Radius' Suggestions.txt | awk -F ':' '{print $2}'\`
 
 > insane -f 1D1_cg.pdb -o 1D1_cg-solvent.gro -p 1D1_cg-solvent.top -pbc cubic -x 15 -y 15 -z 15 -center -l POPC -disc ${r} -a 0.7 -ring -sol W -salt 0.15 -excl -1  
@@ -225,7 +216,7 @@ Settings are set within the scripts in the top.
 ## 2) Lipid only ND with complex lipid composition
 
 The MSP dimer is constructed as described in the above section 'An empty ND with simple lipid composition'.\
-Go into the directory called Example 2\
+Go into the directory called Example2_complex_lipid_composition\
 
 > conda activate ND_Builder
 
@@ -247,7 +238,7 @@ or
 
 > ./martinize -f 1D1_dimer_assembled.pdb -o 1D1_cg.top -x 1D1_cg.pdb -v -name 1D1 -ss $(cat ss.dat) -ff martini22 -p Backbone
 
-> ./Calc_number_lipids.py -f 1D1.fasta -a 0.70 -p 0\
+> ./Calc_number_lipids.py -f 1D1.fasta\
 > r=\`grep 'Radius' Suggestions.txt | awk -F ':' '{print $2}'\`
 
 
@@ -264,6 +255,10 @@ Simply change the lipid_types and lipid_flag in the top of the scripts.
 
 
 ## 3) A ND with a GPCR embedded - complex lipid composition 
+
+Go into the directory called Example3_protein_embedded.\
+All the commands are embedded in the COMMANDS_Uni scripts as well.
+
 
 For embedding a membrane protein (MP) into a ND additional steps are required.
 1) The MP is prepared, aligned, and coarse grained.
