@@ -187,6 +187,7 @@ Can be constructed automaticly as such:
 > do\
 > 	echo -n 'H' >> ss.dat\
 > done
+
 > ./martinize -f 1D1_dimer.pdb -o 1D1_cg.top -x 1D1_cg.pdb -v -name 1D1 -ss $(cat ss.dat) -ff martini22 -p Backbone
 
 Next the lipids are inserted with the Insane script:\
