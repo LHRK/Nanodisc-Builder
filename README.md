@@ -44,7 +44,7 @@ Insane is however, only compatible with python 2.7, as is the martinize script.
 Both Insane and martinize can be used as scripts as well
 
 
-# Python version
+# Supported python versions
 Python scripts for constructing MSPs:
 - Build_MSP_monomer.py - Python 3 compatible
 - Assemble_two_monomers.py - Python 2+3 compatible
@@ -210,7 +210,7 @@ The COMMANDS_default and COMMANDS_Uni script are wrapper scripts that can be adj
 For defualt settings use the COMMANDS_default script. For more specific settings, the COMMANDS_Uni script can be used.\
 Settings are set within the scripts in the top.
 
-## Lipid only ND with complex lipid composition
+## 2) Lipid only ND with complex lipid composition
 
 The MSP dimer is constructed as described in the above section 'An empty ND with simple lipid composition'.\
 Thereafter the insane script can easily be adjusted and used for complex lipid compositions.\
@@ -222,7 +222,7 @@ For automization, the COMMANDS_default and COMMANDS_Uni can be edited in the beg
 Simply change the lipid_types and lipid_flag in the top of the scripts.
 
 
-## A ND with a GPCR embedded - complex lipid composition 
+## 3) A ND with a GPCR embedded - complex lipid composition 
 
 For embedding a membrane protein (MP) into a ND additional steps are required.
 1) The MP is prepared, aligned, and coarse grained.
