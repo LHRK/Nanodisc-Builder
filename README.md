@@ -175,16 +175,14 @@ Assemble using specific settings, using tandem H5, with an RR interface and 10 a
 
 Once the MSP dimer is constructed, lipids can be inserted with Insane, after coarse graining the MSP dimer with the martinize script. 
 
-> ./martinize -f 1D1_dimer.pdb -o 1D1_cg.top -x 1D1_cg.pdb -v -name 1D1 -ss $(cat ss.dat) -ff martini22 -p Backbone
-
-The ss.dat file is simply the secondary structure of the MSP defined as pure helix.\
+An ss.dat file is constructed, and is simply the secondary structure of the MSP defined as pure helix.\
 Can be constructed automaticly as such:
 > N=\`grep -c CA 1D1_dimer_assembled.pdb\`\
 > for i in \`seq 1 $N\`\
 > do\
 > 	echo -n 'H' >> ss.dat\
 > done
-
+> ./martinize -f 1D1_dimer.pdb -o 1D1_cg.top -x 1D1_cg.pdb -v -name 1D1 -ss $(cat ss.dat) -ff martini22 -p Backbone
 
 Next the lipids are inserted with the Insane script:\
 First an estimated radius of the disc is needed.\
@@ -213,8 +211,26 @@ Settings are set within the scripts in the top.
 ## 2) Lipid only ND with complex lipid composition
 
 The MSP dimer is constructed as described in the above section 'An empty ND with simple lipid composition'.\
+
+> ./Build_MSP_monomer.py -f 1D1.fasta -o 1D1_monomer
+
+>./Assemble_two_monomers.py -m 1D1_monomer.pdb -f 1D1.fasta -o 1D1_dimer -w
+
+> N=\`grep -c CA 1D1_dimer_assembled.pdb\`\
+> for i in \`seq 1 $N\`\
+> do\
+>       echo -n 'H' >> ss.dat\
+> done
+
+> ./martinize -f 1D1_dimer.pdb -o 1D1_cg.top -x 1D1_cg.pdb -v -name 1D1 -ss $(cat ss.dat) -ff martini22 -p Backbone
+
+> ./Calc_number_lipids.py -f 1D1.fasta -a 0.70 -p 0\
+> r=\`grep 'Radius' Suggestions.txt | awk -F ':' '{print $2}'\`
+
+
 Thereafter the insane script can easily be adjusted and used for complex lipid compositions.\
 Eg. for constructing a ND with 1:9 POPG:POPC lipids, the Insane command can be like so:
+
 > insane -f 1D1_cg.pdb -o 1D1_cg-solvent.gro -p 1D1_cg-solvent.top -pbc cubic -x 15 -y 15 -z 15 -center -l POPC:90 -l POPG:10 -u POPC:90 -l POPG:10 -disc ${r} -a 0.7 -ring -sol W -salt 0.15 -excl -1
 
 The -l and -u flags are for lower and upper leaflet, respectively.\
