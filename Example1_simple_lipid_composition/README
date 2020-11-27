@@ -1,0 +1,6 @@
+The script COMMANDS_default copied the scripts from the ../Scripts directory into this directory.
+
+You can either run the COMMANDS_default script, which should build the entire system, solvated and neutralized.
+Ot you can copy the python script into this directory, and try it out manually.
+
+The COMMANDS_default script might fail with martinize or insane, since they will need a change of virtual environment. 
