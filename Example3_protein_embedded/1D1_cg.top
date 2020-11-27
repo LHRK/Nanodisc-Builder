@@ -1,0 +1,12 @@
+#include "martini.itp"
+
+#include "1D1_A.itp"
+
+[ system ]
+; name
+Martini system from 1D1_dimer_box.pdb
+
+[ molecules ]
+; name        number
+1D1_A 	 1
+1D1_A 	 1

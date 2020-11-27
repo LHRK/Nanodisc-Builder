@@ -1,0 +1,25 @@
+#include "martini_v2.2.itp"
+#include "1D1_A.itp"
+#include "GCGR.itp"
+#include "martini_v2.0_solvents.itp"
+#include "martini_v2.0_ions.itp"
+#include "POPC.itp"
+#include "POPG.itp"
+
+[ system ]
+; name
+1D1_A in INSANE! Membrane UpperLeaflet>POPC:POPG=90.0:10.0 LowerLeaflet>POPC:POPG=90.0:10.0
+
+
+[ molecules ]
+; name  number
+1D1_A          1
+1D1_A          1
+GCGR              1
+POPC            46
+POPG             5
+POPC            43
+POPG             4
+W            25424
+NA+            289
+CL-            270

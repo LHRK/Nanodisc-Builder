@@ -1,0 +1,10 @@
+#include "charmm36.ff/forcefield.itp"
+#include "1D1_AA.itp"
+
+[ system ]
+; Name
+MDANALYSIS FRAME 0: Created by PDBWriter
+
+[ molecules ]
+; Compound        #mols
+1D1             1
