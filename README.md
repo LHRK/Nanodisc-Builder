@@ -233,6 +233,10 @@ Go into the directory called Example 2\
 
 >./Assemble_two_monomers.py -m 1D1_monomer.pdb -f 1D1.fasta -o 1D1_dimer -w
 
+or
+
+>./Assemble_two_monomers.py -m 1D1_monomer.pdb -f 1D1.fasta -o 1D1_dimer -H H5 --if LL -t 12 
+
 > N=\`grep -c CA 1D1_dimer_assembled.pdb\`\
 > for i in \`seq 1 $N\`\
 > do\
