@@ -77,7 +77,6 @@ def auto_identify (fasta, H='H5'):
 	}
 	
 	Helix = Tandems[H]
-	fasta = args.fasta
 	fasta_in = open(fasta).readlines()[1:]
 	fasta_seq = " ".join([i.strip('\n') for i in fasta_in])
 	begin_seq = fasta_seq.find(Helix)

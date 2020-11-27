@@ -1,0 +1,18 @@
+#include "charmm36.ff/forcefield.itp"
+#include "1D1_AA.itp"
+#include "POPG.itp"
+#include "charmm36.ff/tip3p.itp"
+#include "charmm36.ff/ions.itp"
+#include "POPC.itp"
+#include "charmm36.ff/tip3p.itp"
+#include "charmm36.ff/ions.itp"
+
+[ system ]
+; Name
+MDANALYSIS FRAME 0: Created by PDBWriter
+
+[ molecules ]
+; Compound        #mols
+1D1    2
+POPC     119
+POPG     12

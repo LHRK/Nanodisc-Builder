@@ -7,11 +7,12 @@
 # It build the MSPs atomistically with the python scripts, and then coarse grain the structures and insert lipids using martinize and insane.py
 
 # Stuff you need to edit
-export base='2n5e' #Base name for the system / Nanodisc
+export base='1D1' #Base name for the system / Nanodisc
 FF='martini22' #martini22 or martini_3.0.b.3.2/martini303v.partition
 fasta="${base}.fasta" 
-r1=144 #Resids in the sequence for imposing, when constructing the MSP dimer
-r2=144
+r1='None' #Start resid for tandem repeat for assembling the dimer
+r2='None' #End resid for tandem repeat for assembling the dimer
+H='H5'    #Tandem (H1-H10 avaliable) repeat for assembling the dimer 
 trans_z=12 #distance in angstrom between the two MSP monomers
 interface='LL' #LL = Left-Left interface or RR for Right-Right interface. 
 x_len=15 #Size of the box in nm
@@ -19,9 +20,11 @@ y_len=15
 z_len=15
 lipid_types=(POPC POPG) # lipid types
 lipid_flag='-l POPC:90 -l POPG:10 -u POPC:90 -u POPG:10' # flag for insane. The -l and -u flags are for lower and upper leaflet, respectively. Here POPC and POPG are inserted in a 9:1 ratio. 
-apl=0.59 # Area per lipid in nm² for use in insane
+apl=0.69 # Area per lipid in nm² for use in insane
 asym_corr=0 # Use for correting the amount of lipids in each leaflet, if insane dose not inseret the same amount in each leaflet. 
-script_dir='../Scripts' # Directory for where all the scripts, force field parameters and mdp files are located. 
+MP='None' #set to None if lipid-only disc, otherwise name for the MP. Used for output files
+MP_input='' #input coarse grained file of the MP.
+dir='../' # Directory for where all the scripts, force field parameters and mdp files are located. 
 
 ########################
 # Reads in flags
@@ -52,13 +55,13 @@ fi
 if [ "$FF" = "martini22" ]
 then
 W_name="W"
-cp  ${script_dir}/martini_3.0.b.3.2/martinize .
-cp ${script_dir}/Martini2_itpFiles/*.itp .
+cp  ${dir}/Scripts/martinize .
+cp ${dir}/Martini2_itpFiles/*.itp .
 	elif [ "$FF" != "martini22" ]
 	then
 	W_name="WN"
-        cp -r ${script_dir}/martini_3.0.b.3.2 .
-        cp ${script_dir}//martini_3.0.b.3.2/martinize .
+        cp -r ${dir}/martini_3.0.b.3.2 .
+        cp ${dir}/Scripts/martinize .
 fi
 
 ########################
@@ -67,25 +70,31 @@ fi
 source activate ND_Builder
 
 # The python provides a Suggesting.txt file, with approximate radius 
-cp ${script_dir}/Calc_number_lipids.py .
+cp ${dir}/Scripts/Calc_number_lipids.py .
 echo "python Calc_number_lipids.py -f ${fasta}"
 python Calc_number_lipids.py -f ${fasta} 
 r=`grep 'Radius' Suggestions.txt | awk -F ':' '{print $2}'`
 echo "suggested radius $r"
-echo "suggested radius $r" > radius.txt
 
 ########################
 
 # Building the MSPs and assembling them atomistically
-cp ${script_dir}/Build_MSP_monomer.py .
-cp ${script_dir}/Assemble_two_monomers.py .
+cp ${dir}/Scripts/Build_MSP_monomer.py .
+cp ${dir}/Scripts/Assemble_two_monomers.py .
 
 python -W ignore Build_MSP_monomer.py -f $fasta -o ${base}_monomer
-python -W ignore Assemble_two_monomers.py -m ${base}_monomer.pdb -o ${base}_dimer --r1 ${r1} --r2 ${r2} -t ${trans_z} --if ${interface}
+
+if [[ $r1 == 'None' ]]; then
+	echo "python -W ignore Assemble_two_monomers.py -m ${base}_monomer.pdb -o ${base}_dimer -H ${H} -t ${trans_z} --if ${interface} -f ${base}.fasta"
+	python -W ignore Assemble_two_monomers.py -m ${base}_monomer.pdb -o ${base}_dimer -H ${H} -t ${trans_z} --if ${interface} -f ${base}.fasta
+elif [[ $H == 'None' ]]; then
+	echo "python -W ignore Assemble_two_monomers.py -m ${base}_monomer.pdb -o ${base}_dimer --r1 ${r1} --r2 ${r2} -t ${trans_z} --if ${interface}"
+	python -W ignore Assemble_two_monomers.py -m ${base}_monomer.pdb -o ${base}_dimer --r1 ${r1} --r2 ${r2} -t ${trans_z} --if ${interface} 
+fi
 
 #Adding hydrogens and generating an atomistic topology - so far only for sligar, so for circularized you will need to correct the itp file
 gmx editconf -f ${base}_dimer_assembled.pdb -o ${base}-box.gro -box ${x_len} ${y_len} ${z_len}
-cp -r ${script_dir}/charmm36.ff .
+cp -r ${dir}/charmm36.ff .
 gmx pdb2gmx -f ${base}-box.gro -o ${base}-pdb2gmx.gro -p ${base}_AA_pdb2gmx.top -ff charmm36 -water none -i ${base}_posres.itp
 
 
@@ -135,12 +144,12 @@ source activate CG_env
 source activate py.27
 if [ "$f" = "Connect" ]
 then
-	echo "./martinize -f ${AA_struc} -o ${base}_cg.top -x ${base}_cg.pdb -v -name ${base} -ss $(cat ss.dat) -ff ${FF} -p Backbone -nt"
-	./martinize -f ${AA_struc} -o ${base}_cg.top -x ${base}_cg.pdb -v -name ${base} -ss $(cat ss.dat) -ff ${FF} -p Backbone -nt
+	echo "./martinize -f ${base}_dimer_box.pdb -o ${base}_cg.top -x ${base}_cg.pdb -v -name ${base} -ss $(cat ss.dat) -ff ${FF} -p Backbone -nt"
+	./martinize -f ${base}_dimer_box.pdb -o ${base}_cg.top -x ${base}_cg.pdb -v -name ${base} -ss $(cat ss.dat) -ff ${FF} -p Backbone -nt
 elif [ "$f" = "Standard" ]
 then
-	echo "./martinize -f ${AA_struc} -o ${base}_cg.top -x ${base}_cg.pdb -v -name ${base} -ss $(cat ss.dat) -ff ${FF} -p Backbone"
-	./martinize -f ${AA_struc} -o ${base}_cg.top -x ${base}_cg.pdb -v -name ${base} -ss $(cat ss.dat) -ff ${FF} -p Backbone
+	echo "./martinize -f ${base}_dimer_box.pdb -o ${base}_cg.top -x ${base}_cg.pdb -v -name ${base} -ss $(cat ss.dat) -ff ${FF} -p Backbone"
+	./martinize -f ${base}_dimer_box.pdb -o ${base}_cg.top -x ${base}_cg.pdb -v -name ${base} -ss $(cat ss.dat) -ff ${FF} -p Backbone
 fi
 source deactivate
 
@@ -225,13 +234,13 @@ if [[ $MP == 'None' ]]; then
 		do
 			sed -i "${line}i #include \"${lipid_type}.itp\"" ${base}_cg-solvent.top
 			line=$((line+1))
-			cp ${script_dir}/Martini_lipid_itps/${lipid_type}.itp .
+			cp ${dir}/Martini_lipid_itps/${lipid_type}.itp .
 		done
 	fi
 	
 	
 	
-	cp ${script_dir}/MDP_FILES_CG/*.mdp .
+	cp ${dir}/MDP_FILES_CG/*.mdp .
 	
 	#Grompping a min tpr
 	gmx grompp -f min1.mdp -c ${base}_cg-solvent.gro -o ${base}_cg-solvent-min.tpr -p ${base}_cg-solvent.top -maxwarn 1
@@ -251,7 +260,7 @@ if [[ $MP == 'None' ]]; then
 	cat sel5 | gmx make_ndx -n ${base}_cg-solvent.ndx -o ${base}_cg-solvent.ndx
 	rm sel sel5
 	
-	cp ${script_dir}/Run.sh .
+	cp ${dir}/Scripts/Run.sh .
 	
 	sed -i "s/lipid/${lipid_type}/g" *.mdp
 	sed -i "s/protein/Protein/g" *.mdp 
@@ -328,12 +337,12 @@ else
 		do
 			sed -i "${line}i #include \"${lipid_type}.itp\"" ${MP}_${base}_cg-solvent.top
 			line=$((line+1))
-			cp ${script_dir}/Martini_lipid_itps/${lipid_type}.itp .
+			cp ${dir}/Martini_lipid_itps/${lipid_type}.itp .
 		done
 	fi
 	
 	
-	cp ${script_dir}/MDP_FILES_CG/*.mdp .
+	cp ${dir}/MDP_FILES_CG/*.mdp .
 	
 	#Grompping a min tpr
 	gmx grompp -f min1.mdp -c ${MP}_${base}_cg-solvent.gro -o ${MP}_${base}_cg-solvent-min.tpr -p ${MP}_${base}_cg-solvent.top -maxwarn 1
@@ -353,7 +362,7 @@ else
 	cat sel5 | gmx make_ndx -n ${MP}_${base}_cg-solvent.ndx -o ${MP}_${base}_cg-solvent.ndx
 	rm sel sel5
 	
-	cp ${script_dir}/Run.sh .
+	cp ${dir}/Scripts/Run.sh .
 	
 	sed -i "s/lipid/${lipid_type}/g" *.mdp
 	sed -i "s/protein/Protein/g" *.mdp 

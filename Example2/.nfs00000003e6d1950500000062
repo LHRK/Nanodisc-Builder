@@ -85,11 +85,11 @@ cp ${dir}/Scripts/Assemble_two_monomers.py .
 python -W ignore Build_MSP_monomer.py -f $fasta -o ${base}_monomer
 
 if [[ $r1 == 'None' ]]; then
-	echo "python -W ignore Assemble_two_monomers.py -m ${base}_monomer.pdb -o ${base}_dimer -H ${H} -t ${trans_z} --if ${interface} -f ${base}.fasta"
-	python -W ignore Assemble_two_monomers.py -m ${base}_monomer.pdb -o ${base}_dimer -H ${H} -t ${trans_z} --if ${interface} -f ${base}.fasta
+	echo "python -W ignore Assemble_two_monomers.py -m ${base}_monomer.pdb -o ${base}_dimer -H ${H} -t ${trans_z} --if ${interface}"
+	python -W ignore Assemble_two_monomers.py -m ${base}_monomer.pdb -o ${base}_dimer -H ${H} -t ${trans_z} --if ${interface}
 elif [[ $H == 'None' ]]; then
 	echo "python -W ignore Assemble_two_monomers.py -m ${base}_monomer.pdb -o ${base}_dimer --r1 ${r1} --r2 ${r2} -t ${trans_z} --if ${interface}"
-	python -W ignore Assemble_two_monomers.py -m ${base}_monomer.pdb -o ${base}_dimer --r1 ${r1} --r2 ${r2} -t ${trans_z} --if ${interface} 
+	python -W ignore Assemble_two_monomers.py -m ${base}_monomer.pdb -o ${base}_dimer --r1 ${r1} --r2 ${r2} -t ${trans_z} --if ${interface}
 fi
 
 #Adding hydrogens and generating an atomistic topology - so far only for sligar, so for circularized you will need to correct the itp file

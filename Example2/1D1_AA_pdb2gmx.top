@@ -17,10 +17,12 @@
 ;	Force field was read from current directory or a relative path - path added.
 ;
 
+; Include forcefield parameters
+#include "./charmm36.ff/forcefield.itp"
 
 [ moleculetype ]
 ; Name            nrexcl
-1D1             3
+Protein             3
 
 [ atoms ]
 ;   nr       type  resnr residue  atom   cgnr     charge       mass  typeB    chargeB      massB
@@ -57964,3 +57966,11 @@
 #ifdef POSRES
 #include "1D1_posres.itp"
 #endif
+
+[ system ]
+; Name
+MDANALYSIS FRAME 0: Created by PDBWriter
+
+[ molecules ]
+; Compound        #mols
+Protein             1
