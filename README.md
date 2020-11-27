@@ -4,7 +4,7 @@ Integrated with Insane and Martinize scripts, the protocol can be used to easily
 
 ## Installation 
 It is recommended to make a virtual environment with eg Anaconda like so:  
-
+(with python 3)
 > conda create -n ND_Builder\
 > conda activate ND_Builder\
 > conda install numpy\
@@ -16,7 +16,7 @@ It is recommended to make a virtual environment with eg Anaconda like so:
 > pip install PeptideBuilder\
 > conda deactivate
 
-Make a virtual environment for Insane and martinize\
+Make a virtual environment for Insane and martinize
 > conda create -n CG_env Python=2.7\
 > conda activate CG_env\
 > conda install numpy\
