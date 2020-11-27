@@ -46,11 +46,10 @@ Both Insane and martinize can be used as scripts as well
 
 # Python version
 Python scripts for constructing MSPs:
-- Build_MSP_monomer.py
-- Assemble_two_monomers.py
-- Calc_number_lipids.py\
+- Build_MSP_monomer.py - Python 3 compatible
+- Assemble_two_monomers.py - Python 2+3 compatible
+- Calc_number_lipids.py - Python 2+3 compatible\
 
-They are all compatible with python2.7 and python3
 
 The Insane and Martinize scripts are however only compatible in python2.7. 
 The Martinize script can also be found at the github page: https://github.com/cgmartini/martinize.py, where a python 3 version is avaliable upon request. 
