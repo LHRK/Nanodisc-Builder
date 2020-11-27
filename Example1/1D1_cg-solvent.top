@@ -1,0 +1,20 @@
+#include "martini_v2.2.itp"
+#include "1D1_A.itp"
+#include "martini_v2.0_solvents.itp"
+#include "martini_v2.0_ions.itp"
+#include "POPC.itp"
+
+[ system ]
+; name
+1D1_A in INSANE! Membrane UpperLeaflet>POPC=1 LowerLeaflet>POPC=1
+
+
+[ molecules ]
+; name  number
+1D1_A          1
+1D1_A          1
+POPC            67
+POPC            66
+W            25912
+NA+            295
+CL-            275

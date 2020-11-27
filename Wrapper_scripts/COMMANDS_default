@@ -13,13 +13,13 @@ fasta="${base}.fasta"
 x_len=15 #Size of the box in nm, assumed cubic
 y_len=15
 z_len=15
-lipid_types=(POPC POPG) # lipid types
-lipid_flag='-l POPC:90 -l POPG:10 -u POPC:90 -u POPG:10' # flag for insane. The -l and -u flags are for lower and upper leaflet, respectively. Here POPC and POPG are inserted in a 9:1 ratio. 
+lipid_types=(POPC) # lipid types
+lipid_flag='-l POPC' # flag for insane. The -l and -u flags are for lower and upper leaflet, respectively. Here POPC and POPG are inserted in a 9:1 ratio. 
 apl=0.7 # Area per lipid in nm² for use in insane 
 asym_corr=0 # Use for correting the amount of lipids in each leaflet, if insane dose not inseret the same amount in each leaflet. 
-MP='GCGR' #set to None if lipid-only disc, otherwise name for the MP. Used for output files
-MP_input='GCGR_cg.pdb' #input coarse grained file of the MP. 
-script_dir='../Scripts' # Directory for where all the scripts, force field parameters and mdp files are located. 
+MP='None' #set to None if lipid-only disc, otherwise name for the MP. Used for output files
+MP_input='' #input coarse grained file of the MP. 
+dir='../' # Directory for where all the scripts, force field parameters and mdp files are located. 
 
 ########################
 # Reads in flags
@@ -52,12 +52,11 @@ source activate ND_Builder
 
 
 # The python provides a Suggesting.txt file, with approximate radius 
-cp ${script_dir}/Calc_number_lipids.py .
+cp ${dir}/Scripts/Calc_number_lipids.py .
 echo "python Calc_number_lipids.py -f ${fasta}"
 python Calc_number_lipids.py -f ${fasta} 
 r=`grep 'Radius' Suggestions.txt | awk -F ':' '{print $2}'`
 echo "suggested radius $r"
-echo "suggested radius $r" > radius.txt
 
 ########################
 #Setting the water name depending on the martini verison
@@ -65,27 +64,27 @@ echo "suggested radius $r" > radius.txt
 if [ "$FF" = "martini22" ]
 then
 W_name="W"
-cp  ${script_dir}/martini_3.0.b.3.2/martinize .
-cp ${script_dir}/Martini2_itpFiles/*.itp .
+cp  ${dir}/Scripts/martinize .
+cp ${dir}/Martini2_itpFiles/*.itp .
 	elif [ "$FF" != "martini22" ]
 	then
 	W_name="WN"
-        cp -r ${script_dir}/martini_3.0.b.3.2 .
-        cp ${script_dir}//martini_3.0.b.3.2/martinize .
+        cp -r ${dir}/martini_3.0.b.3.2 .
+        cp ${dir}/Scripts/martinize .
 fi
 
 ########################
 
 # Building the MSPs and assembling them atomistically
-cp ${script_dir}/Build_MSP_monomer.py .
-cp ${script_dir}/Assemble_two_monomers.py .
+cp ${dir}/Scripts/Build_MSP_monomer.py .
+cp ${dir}/Scripts/Assemble_two_monomers.py .
 
 python -W ignore Build_MSP_monomer.py -f $fasta -o ${base}_monomer
 python -W ignore Assemble_two_monomers.py -m ${base}_monomer.pdb -o ${base}_dimer -f ${base}.fasta -w
 
 #Adding hydrogens and generating an atomistic topology - so far only for sligar, so for circularized you will need to correct the itp file
 gmx editconf -f ${base}_dimer_assembled.pdb -o ${base}-box.gro -box ${x_len} ${y_len} ${z_len}
-cp -r ${script_dir}/charmm36.ff .
+cp -r ${dir}/charmm36.ff .
 gmx pdb2gmx -f ${base}-box.gro -o ${base}-pdb2gmx.gro -p ${base}_AA_pdb2gmx.top -ff charmm36 -water none -i ${base}_posres.itp
 
 
@@ -131,16 +130,18 @@ done
 source deactivate
 source activate CG_env
 
+
+
 ################ Coarse graining ######################################
-source activate py.27
+conda activate py.27
 if [ "$f" = "Connect" ]
 then
-	echo "./martinize -f ${AA_struc} -o ${base}_cg.top -x ${base}_cg.pdb -v -name ${base} -ss $(cat ss.dat) -ff ${FF} -p Backbone -nt"
-	./martinize -f ${AA_struc} -o ${base}_cg.top -x ${base}_cg.pdb -v -name ${base} -ss $(cat ss.dat) -ff ${FF} -p Backbone -nt
+	echo "./martinize -f ${base}_dimer_box.pdb -o ${base}_cg.top -x ${base}_cg.pdb -v -name ${base} -ss $(cat ss.dat) -ff ${FF} -p Backbone -nt"
+	./martinize -f ${base}_dimer_box.pdb -o ${base}_cg.top -x ${base}_cg.pdb -v -name ${base} -ss $(cat ss.dat) -ff ${FF} -p Backbone -nt
 elif [ "$f" = "Standard" ]
 then
-	echo "./martinize -f ${AA_struc} -o ${base}_cg.top -x ${base}_cg.pdb -v -name ${base} -ss $(cat ss.dat) -ff ${FF} -p Backbone"
-	./martinize -f ${AA_struc} -o ${base}_cg.top -x ${base}_cg.pdb -v -name ${base} -ss $(cat ss.dat) -ff ${FF} -p Backbone
+	echo "./martinize -f ${base}_dimer_box.pdb -o ${base}_cg.top -x ${base}_cg.pdb -v -name ${base} -ss $(cat ss.dat) -ff ${FF} -p Backbone"
+	./martinize -f ${base}_dimer_box.pdb -o ${base}_cg.top -x ${base}_cg.pdb -v -name ${base} -ss $(cat ss.dat) -ff ${FF} -p Backbone
 fi
 
 #######################################################################
@@ -162,7 +163,7 @@ if [[ $MP == 'None' ]]; then
 	echo "insane -f ${base}_cg.pdb -o ${base}_cg-solvent.gro -p ${base}_cg-solvent.top -pbc cubic -x ${x_len} -y ${y_len} -z ${z_len} -center ${lipid_flag} -disc ${r} -a ${apl} -ring -sol ${W_name} -salt 0.15 -excl -1 -asym ${asym_corr}"
 	insane -f ${base}_cg.pdb -o ${base}_cg-solvent.gro -p ${base}_cg-solvent.top -pbc cubic -x ${x_len} -y ${y_len} -z ${z_len} -center  ${lipid_flag} -disc ${r} -a ${apl} -ring -sol ${W_name} -salt 0.15 -excl -1 -asym ${asym_corr}
 	
-	#source deactivate
+	#conda deactivate
 	#####################################################################
 	
 	line_start=`grep -n "$base " ${base}_AA.top | gawk -F ':' '{print $1}'`
@@ -223,13 +224,13 @@ if [[ $MP == 'None' ]]; then
 		do
 			sed -i "${line}i #include \"${lipid_type}.itp\"" ${base}_cg-solvent.top
 			line=$((line+1))
-			cp ${script_dir}/Martini_lipid_itps/${lipid_type}.itp .
+			cp ${dir}/Martini_lipid_itps/${lipid_type}.itp .
 		done
 	fi
 	
 	
 	
-	cp ${script_dir}/MDP_FILES_CG/*.mdp .
+	cp ${dir}/MDP_FILES_CG/*.mdp .
 	
 	#Grompping a min tpr
 	gmx grompp -f min1.mdp -c ${base}_cg-solvent.gro -o ${base}_cg-solvent-min.tpr -p ${base}_cg-solvent.top -maxwarn 1
@@ -249,20 +250,21 @@ if [[ $MP == 'None' ]]; then
 	cat sel5 | gmx make_ndx -n ${base}_cg-solvent.ndx -o ${base}_cg-solvent.ndx
 	rm sel sel5
 	
-	cp ${script_dir}/Run.sh .
+	cp ${dir}/Scripts/Run.sh .
 	
 	sed -i "s/lipid/${lipid_type}/g" *.mdp
 	sed -i "s/protein/Protein/g" *.mdp 
+	echo "### DONE with constructing the nanodisc ######"
 
 ## Embedding the MP ##
 else
+	echo "Embedding membrane protein"
 	gmx editconf -f $MP_input -c -box ${x_len} ${y_len} ${x_len} -o ${MP}_center.pdb
 	gmx editconf -f ${base}_cg.pdb -c -box ${x_len} ${y_len} ${x_len} -o  ${base}_cg_center.pdb
 	cat ${MP}_center.pdb ${base}_cg_center.pdb > ${MP}_${base}.pdb
 	
 	echo "insane -f ${MP}_${base}.pdb -o ${MP}_${base}_cg-solvent.gro -p ${MP}_${base}_cg-solvent.top -pbc cubic -x ${x_len} -y ${y_len} -z ${z_len} -center ${lipid_flag} -disc ${r} -a ${apl} -ring -sol ${W_name} -salt 0.15 -excl -1 -asym ${asym_corr}"
 	insane -f ${MP}_${base}.pdb -o ${MP}_${base}_cg-solvent.gro -p ${MP}_${base}_cg-solvent.top -pbc cubic -x ${x_len} -y ${y_len} -z ${z_len} -center  ${lipid_flag} -disc ${r} -a ${apl} -ring -sol ${W_name} -salt 0.15 -excl -1 -asym ${asym_corr}
-fi
 
 	### For the atomistic topology for the MSP ###
 	line_start=`grep -n "$base " ${base}_AA.top | gawk -F ':' '{print $1}'`
@@ -327,12 +329,12 @@ fi
 		do
 			sed -i "${line}i #include \"${lipid_type}.itp\"" ${MP}_${base}_cg-solvent.top
 			line=$((line+1))
-			cp ${script_dir}/Martini_lipid_itps/${lipid_type}.itp .
+			cp ${dir}/Martini_lipid_itps/${lipid_type}.itp .
 		done
 	fi
 	
 	
-	cp ${script_dir}/MDP_FILES_CG/*.mdp .
+	cp ${dir}/MDP_FILES_CG/*.mdp .
 	
 	#Grompping a min tpr
 	gmx grompp -f min1.mdp -c ${MP}_${base}_cg-solvent.gro -o ${MP}_${base}_cg-solvent-min.tpr -p ${MP}_${base}_cg-solvent.top -maxwarn 1
@@ -352,15 +354,14 @@ fi
 	cat sel5 | gmx make_ndx -n ${MP}_${base}_cg-solvent.ndx -o ${MP}_${base}_cg-solvent.ndx
 	rm sel sel5
 	
-	cp ${script_dir}/Run.sh .
+	cp ${dir}/Scripts/Run.sh .
 	
 	sed -i "s/lipid/${lipid_type}/g" *.mdp
 	sed -i "s/protein/Protein/g" *.mdp 
-
+fi
 source deactivate
 
 ############# Minimazing and equlibrating CG ##########################
 #./Run.sh
 #rm step*.pdb
 #rm \#*#
-#

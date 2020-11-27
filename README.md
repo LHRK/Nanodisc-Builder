@@ -193,6 +193,9 @@ Can be constructed automaticly as such:
 
 > ./martinize -f 1D1_dimer_assembled.pdb -o 1D1_cg.top -x 1D1_cg.pdb -v -name 1D1 -ss $(cat ss.dat) -ff martini22 -p Backbone
 
+NB. If martinize comes with an error, "can't divide with zero", run the pdb through GROMACS and try again:\
+> gmx trjconv -f 1D1_dimer_assembled.pdb -o 1D1_dimer_assembled.pdb
+
 Next the lipids are inserted with the Insane script:\
 First an estimated radius of the disc is needed.\
 This can be obtained with the script:

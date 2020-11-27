@@ -131,6 +131,9 @@ done
 source deactivate 
 source activate CG_env
 
+### Sometimes martinize is having troubles reading the output pdb files from the python scripts
+### Running it quickly through gromacs helps
+gmx trjconv -f ${AA_struc} -o ${AA_struc}
 ################ Coarse graining ######################################
 source activate py.27
 if [ "$f" = "Connect" ]
