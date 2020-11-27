@@ -161,7 +161,10 @@ Hence the two leaflets can be constructed differently as well, by using the -l a
 
 ## 1) Lipid only ND with simple lipid composition
 
-Constructing 1D1 with POPC lipids.
+Constructing 1D1 with POPC lipids.\
+Go into the directory called Example1\
+
+> conda activate ND_Builder
 
 > ./Build_MSP_monomer.py -f 1D1.fasta -o 1D1_monomer
 
@@ -174,6 +177,8 @@ Assemble using specific settings, using tandem H5, with an RR interface and 10 a
 >./Assemble_two_monomers.py -m 1D1_monomer.pdb -f 1D1.fasta -o 1D1_dimer -H 'H5' -t 10 --if RR
 
 Once the MSP dimer is constructed, lipids can be inserted with Insane, after coarse graining the MSP dimer with the martinize script. 
+
+> conda activate CG_env
 
 An ss.dat file is constructed, and is simply the secondary structure of the MSP defined as pure helix.\
 Can be constructed automaticly as such:
@@ -191,6 +196,8 @@ This can be obtained with the script:
 > r=\`grep 'Radius' Suggestions.txt | awk -F ':' '{print $2}'\`
 
 > insane -f 1D1_cg.pdb -o 1D1_cg-solvent.gro -p 1D1_cg-solvent.top -pbc cubic -x 15 -y 15 -z 15 -center -l POPC -disc ${r} -a 0.7 -ring -sol W -salt 0.15 -excl -1  
+
+> conda deactivate
 
 Next is minimization and equlibration.\
 The Run.sh or Run_ver18.sh can be used here, along with the suggested mdp files.\
@@ -211,6 +218,9 @@ Settings are set within the scripts in the top.
 ## 2) Lipid only ND with complex lipid composition
 
 The MSP dimer is constructed as described in the above section 'An empty ND with simple lipid composition'.\
+Go into the directory called Example 2\
+
+> conda activate ND_Builder
 
 > ./Build_MSP_monomer.py -f 1D1.fasta -o 1D1_monomer
 
@@ -222,6 +232,8 @@ The MSP dimer is constructed as described in the above section 'An empty ND with
 >       echo -n 'H' >> ss.dat\
 > done
 
+> conda activate CG_env
+
 > ./martinize -f 1D1_dimer.pdb -o 1D1_cg.top -x 1D1_cg.pdb -v -name 1D1 -ss $(cat ss.dat) -ff martini22 -p Backbone
 
 > ./Calc_number_lipids.py -f 1D1.fasta -a 0.70 -p 0\
@@ -232,6 +244,8 @@ Thereafter the insane script can easily be adjusted and used for complex lipid c
 Eg. for constructing a ND with 1:9 POPG:POPC lipids, the Insane command can be like so:
 
 > insane -f 1D1_cg.pdb -o 1D1_cg-solvent.gro -p 1D1_cg-solvent.top -pbc cubic -x 15 -y 15 -z 15 -center -l POPC:90 -l POPG:10 -u POPC:90 -l POPG:10 -disc ${r} -a 0.7 -ring -sol W -salt 0.15 -excl -1
+
+> conda deactivate 
 
 The -l and -u flags are for lower and upper leaflet, respectively.\
 For automization, the COMMANDS_default and COMMANDS_Uni can be edited in the beginning of the file, to account for several lipid types in the disc.\
