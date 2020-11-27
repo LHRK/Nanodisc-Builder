@@ -159,7 +159,7 @@ Hence the two leaflets can be constructed differently as well, by using the -l a
 
 # Examples
 
-## Lipid only ND with simple lipid composition
+## 1) Lipid only ND with simple lipid composition
 
 Constructing 1D1 with POPC lipids.
 
@@ -179,7 +179,7 @@ Once the MSP dimer is constructed, lipids can be inserted with Insane, after coa
 
 The ss.dat file is simply the secondary structure of the MSP defined as pure helix.\
 Can be constructed automaticly as such:
-> N=\`grep -c CA 1D1_assembled_dimer.pdb\`\
+> N=\`grep -c CA 1D1_dimer_assembled.pdb\`\
 > for i in \`seq 1 $N\`\
 > do\
 > 	echo -n 'H' >> ss.dat\
