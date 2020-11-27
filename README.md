@@ -4,7 +4,7 @@ Integrated with Insane and Martinize scripts, the protocol can be used to easily
 
 ## Installation 
 It is recommended to make a virtual environment with eg Anaconda like so:  
-(with python 3)
+(Supportive python verions: 3)
 > conda create -n ND_Builder\
 > conda activate ND_Builder\
 > conda install numpy\
@@ -48,7 +48,7 @@ Both Insane and martinize can be used as scripts as well
 Python scripts for constructing MSPs:
 - Build_MSP_monomer.py - Python 3 compatible
 - Assemble_two_monomers.py - Python 2+3 compatible
-- Calc_number_lipids.py - Python 2+3 compatible\
+- Calc_number_lipids.py - Python 2+3 compatible
 
 
 The Insane and Martinize scripts are however only compatible in python2.7. 
