@@ -191,7 +191,7 @@ Next the lipids are inserted with the Insane script:\
 First an estimated radius of the disc is needed.\
 This can be obtained with the script:
 > ./Calc_number_lipids.py -f 1D1.fasta -a 0.70 -p 0\
-> r=`grep 'Radius' Suggestions.txt | awk -F ':' '{print $2}'`
+> r=\`grep 'Radius' Suggestions.txt | awk -F ':' '{print $2}'\`
 
 > insane -f 1D1_cg.pdb -o 1D1_cg-solvent.gro -p 1D1_cg-solvent.top -pbc cubic -x 15 -y 15 -z 15 -center -l POPC -disc ${r} -a 0.7 -ring -sol W -salt 0.15 -excl -1  
 
