@@ -1,4 +1,4 @@
-# Genereic protocol for constructing Nanodiscs in silico
+# Generic protocol for constructing Nanodiscs in silico
 The protocol introduces a novel approach for constructing MSPs in silico.
 Integrated with Insane and Martinize scripts, the protocol can be used to easily construct nanodisc systems.
 
@@ -20,7 +20,7 @@ Make a virtual environment for Insane and martinize
 > conda create -n CG_env Python=2.7\
 > conda activate CG_env\
 > conda install numpy\
-> conda install insane\
+> pip install insane\
 > conda deactivate
 
 And then save all the scripts in one folder, which path can be input in the below wrapper scripts for automization. 
