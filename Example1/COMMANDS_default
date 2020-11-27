@@ -1,0 +1,366 @@
+#!/bin/bash
+
+## COMMENTS ###
+
+# You will only need this script and the fasta file for the Nanodisc you want to build. 
+# The script will copy the needed files to the working directory
+# It build the MSPs atomistically with the python scripts, and then coarse grain the structures and insert lipids using martinize and insane.py
+
+# Stuff you need to edit
+export base='1D1' #Base name for the system / Nanodisc
+FF='martini22' #martini22 or martini_3.0.b.3.2/martini303v.partition
+fasta="${base}.fasta" 
+x_len=15 #Size of the box in nm, assumed cubic
+y_len=15
+z_len=15
+lipid_types=(POPC POPG) # lipid types
+lipid_flag='-l POPC:90 -l POPG:10 -u POPC:90 -u POPG:10' # flag for insane. The -l and -u flags are for lower and upper leaflet, respectively. Here POPC and POPG are inserted in a 9:1 ratio. 
+apl=0.7 # Area per lipid in nm² for use in insane 
+asym_corr=0 # Use for correting the amount of lipids in each leaflet, if insane dose not inseret the same amount in each leaflet. 
+MP='GCGR' #set to None if lipid-only disc, otherwise name for the MP. Used for output files
+MP_input='GCGR_cg.pdb' #input coarse grained file of the MP. 
+script_dir='../Scripts' # Directory for where all the scripts, force field parameters and mdp files are located. 
+
+########################
+# Reads in flags
+Standard=''
+var=$1
+
+f=${var:-Standard}
+
+
+if [ "$f" = "Standard" ]
+then
+echo 'Sligar disc, with terminals'
+        elif [ "$f" = "Connect" ]
+        then
+        echo 'Circularized, terminals connected'
+	cp ${script_dir}/Corr_itp_circularized.sh .
+                elif [ "$f" = "--help" ]
+                then
+                echo 'For cicularized discs, the itp file needs modification. Use the flag Connect for circularized, otherwise it is by standard with terminals as for Sligar discs. The correction of the itp file for the circularized is currently only supported for Coarse Grained molecules.'
+		exit
+                        elif [ "$f" != "Connect" ]
+                        then
+                        echo 'Use Connect for circularized or none for standard sligar discs'
+fi
+
+########################
+# Assesing the radius of the disc
+
+source activate ND_Builder
+
+
+# The python provides a Suggesting.txt file, with approximate radius 
+cp ${script_dir}/Calc_number_lipids.py .
+echo "python Calc_number_lipids.py -f ${fasta}"
+python Calc_number_lipids.py -f ${fasta} 
+r=`grep 'Radius' Suggestions.txt | awk -F ':' '{print $2}'`
+echo "suggested radius $r"
+echo "suggested radius $r" > radius.txt
+
+########################
+#Setting the water name depending on the martini verison
+
+if [ "$FF" = "martini22" ]
+then
+W_name="W"
+cp  ${script_dir}/martini_3.0.b.3.2/martinize .
+cp ${script_dir}/Martini2_itpFiles/*.itp .
+	elif [ "$FF" != "martini22" ]
+	then
+	W_name="WN"
+        cp -r ${script_dir}/martini_3.0.b.3.2 .
+        cp ${script_dir}//martini_3.0.b.3.2/martinize .
+fi
+
+########################
+
+# Building the MSPs and assembling them atomistically
+cp ${script_dir}/Build_MSP_monomer.py .
+cp ${script_dir}/Assemble_two_monomers.py .
+
+python -W ignore Build_MSP_monomer.py -f $fasta -o ${base}_monomer
+python -W ignore Assemble_two_monomers.py -m ${base}_monomer.pdb -o ${base}_dimer -f ${base}.fasta -w
+
+#Adding hydrogens and generating an atomistic topology - so far only for sligar, so for circularized you will need to correct the itp file
+gmx editconf -f ${base}_dimer_assembled.pdb -o ${base}-box.gro -box ${x_len} ${y_len} ${z_len}
+cp -r ${script_dir}/charmm36.ff .
+gmx pdb2gmx -f ${base}-box.gro -o ${base}-pdb2gmx.gro -p ${base}_AA_pdb2gmx.top -ff charmm36 -water none -i ${base}_posres.itp
+
+
+line=`grep -n 'endif' ${base}_AA_pdb2gmx.top | gawk -F : '{print $1}'`
+head -n $((line)) ${base}_AA_pdb2gmx.top > ${base}_AA.itp
+sed -i '20d' ${base}_AA.itp
+sed -i '20d' ${base}_AA.itp
+
+
+tot_lines=`wc -l ${base}_AA_pdb2gmx.top | gawk '{print $1}'`
+top_lines=$((tot_lines-line))
+tail -n $top_lines ${base}_AA_pdb2gmx.top > ${base}_AA.top
+
+
+sed -i "s/Protein/${base}/" ${base}_AA.top
+sed -i "s/Protein/${base}/" ${base}_AA.itp
+sed -i "1i #include \"charmm36.ff/forcefield.itp\"" ${base}_AA.top
+sed -i "2i #include \"${base}_AA.itp\"" ${base}_AA.top
+
+cp ${base}_AA.top ${base}_AA_nowat.top
+
+
+for lipid in "${lipid_types[@]}"
+do
+	sed -i "3i #include \"$lipid.itp\"" ${base}_AA.top
+done
+
+sed -i "4i #include \"charmm36.ff/tip3p.itp\"" ${base}_AA.top
+sed -i "5i #include \"charmm36.ff/ions.itp\"" ${base}_AA.top
+
+gmx editconf -f ${base}_dimer_assembled.pdb -box ${x_len} ${y_len} ${x_len} -o ${base}_dimer_box.pdb
+AA_struc="${base}_dimer_box.pdb"
+
+#Generating the coarse grained structure
+##Generate the ss.dat file
+N=`grep -c CA ${AA_struc}`
+rm ss.dat # Just in case there is one file already
+for i in `seq 1 $N`
+do
+echo -n 'H' >> ss.dat
+done
+
+source deactivate
+source activate CG_env
+
+################ Coarse graining ######################################
+source activate py.27
+if [ "$f" = "Connect" ]
+then
+	echo "./martinize -f ${AA_struc} -o ${base}_cg.top -x ${base}_cg.pdb -v -name ${base} -ss $(cat ss.dat) -ff ${FF} -p Backbone -nt"
+	./martinize -f ${AA_struc} -o ${base}_cg.top -x ${base}_cg.pdb -v -name ${base} -ss $(cat ss.dat) -ff ${FF} -p Backbone -nt
+elif [ "$f" = "Standard" ]
+then
+	echo "./martinize -f ${AA_struc} -o ${base}_cg.top -x ${base}_cg.pdb -v -name ${base} -ss $(cat ss.dat) -ff ${FF} -p Backbone"
+	./martinize -f ${AA_struc} -o ${base}_cg.top -x ${base}_cg.pdb -v -name ${base} -ss $(cat ss.dat) -ff ${FF} -p Backbone
+fi
+
+#######################################################################
+
+#Correction of the itp file for circularized discs, currently only for coarse grained itp files
+if [ "$f" = "Connect" ]
+then
+	./Corr_itp_circularized.sh ${base}_A.itp
+fi
+
+######################################################################
+### For embedding a MP in the disc ###################################
+
+if [[ $MP == 'None' ]]; then
+	echo 'No membrane protein'
+
+	############# Adding lipids, water and NaCl ##########################
+	
+	echo "insane -f ${base}_cg.pdb -o ${base}_cg-solvent.gro -p ${base}_cg-solvent.top -pbc cubic -x ${x_len} -y ${y_len} -z ${z_len} -center ${lipid_flag} -disc ${r} -a ${apl} -ring -sol ${W_name} -salt 0.15 -excl -1 -asym ${asym_corr}"
+	insane -f ${base}_cg.pdb -o ${base}_cg-solvent.gro -p ${base}_cg-solvent.top -pbc cubic -x ${x_len} -y ${y_len} -z ${z_len} -center  ${lipid_flag} -disc ${r} -a ${apl} -ring -sol ${W_name} -salt 0.15 -excl -1 -asym ${asym_corr}
+	
+	#source deactivate
+	#####################################################################
+	
+	line_start=`grep -n "$base " ${base}_AA.top | gawk -F ':' '{print $1}'`
+	line=$((line_start))
+	echo $line
+	
+	for lipid_type in "${lipid_types[@]}"
+	do
+	        # For adding it to the AA top file
+	        count_lipids=0
+	        for i in `grep "$lipid_type " ${base}_cg-solvent.top | gawk '{print $2}'`
+	        do
+	        count_lipids=$((count_lipids+i))
+	        done
+	
+	        sed -i "${line}i $lipid_type     $count_lipids" ${base}_AA.top
+	        line=$((line+1))
+	
+	done
+	
+	
+	sed -i "${line_start}i ${base}    2" ${base}_AA.top
+	sed -i '$d' ${base}_AA.top
+	
+	
+	#Correcting the names of the ions in the gro file
+	#updating the top file with the correct names and itp files
+	
+	if [ "$FF" = "martini22" ]
+	then 
+	sed -i 's/"martini.itp"/"martini_v2.2.itp"/' ${base}_cg-solvent.top
+	sed -i "2i #include \"${base}_A.itp\"" ${base}_cg-solvent.top
+	sed -i '3i #include "martini_v2.0_solvents.itp"' ${base}_cg-solvent.top
+	sed -i '4i #include "martini_v2.0_ions.itp"' ${base}_cg-solvent.top
+	sed -i "s/Protein/${base}_A/" ${base}_cg-solvent.top
+	sed -i "14i ${base}_A          1" ${base}_cg-solvent.top
+	
+		elif [ "$FF" != "martini22" ]
+		then
+		sed -i 's/NA+/TNA/g' ${base}_cg-solvent.gro
+		sed -i 's/CL-/TCL/g' ${base}_cg-solvent.gro
+		sed -i 's/"martini.itp"/"martini_3.0.b.3.2\/martini_v3.0.b.3.2.itp"/' ${base}_cg-solvent.top
+		sed -i "2i #include \"${base}_A.itp\"" ${base}_cg-solvent.top
+		sed -i '4i #include "martini_3.0.b.3.2/martini_v3.0_phospholipids.itp"' ${base}_cg-solvent.top
+		sed -i '5i #include "martini_3.0.b.3.2/martini_v3.0_solvents.itp"' ${base}_cg-solvent.top
+		sed -i '6i #include "martini_3.0.b.3.2/martini_v3.0_ions.itp"' ${base}_cg-solvent.top
+		sed -i "s/Protein/${base}_A/" ${base}_cg-solvent.top
+		sed -i "15i ${base}_A          1" ${base}_cg-solvent.top
+		sed -i 's/NA+/TNA/' ${base}_cg-solvent.top
+		sed -i 's/CL-/TCL/' ${base}_cg-solvent.top
+	fi
+	
+	
+	line=5
+	if [ "$FF" = "martini22" ]
+	then
+		for lipid_type in "${lipid_types[@]}"
+		do
+			sed -i "${line}i #include \"${lipid_type}.itp\"" ${base}_cg-solvent.top
+			line=$((line+1))
+			cp ${script_dir}/Martini_lipid_itps/${lipid_type}.itp .
+		done
+	fi
+	
+	
+	
+	cp ${script_dir}/MDP_FILES_CG/*.mdp .
+	
+	#Grompping a min tpr
+	gmx grompp -f min1.mdp -c ${base}_cg-solvent.gro -o ${base}_cg-solvent-min.tpr -p ${base}_cg-solvent.top -maxwarn 1
+	
+	##Generating a index file with the group solvent being water + ions
+	echo 'q' | gmx make_ndx -f ${base}_cg-solvent-min.tpr -o ${base}_cg-solvent.ndx 
+	sel1=`grep '\[' ${base}_cg-solvent.ndx | gawk '{print NR-1, $2}' | grep "${W_name}" | gawk '{print $1}'`
+	sel2=`grep '\[' ${base}_cg-solvent.ndx | gawk '{print NR-1, $2}' | grep 'ION' | gawk '{print $1}'`
+	echo "$sel1 | $sel2" > sel
+	echo "q" >> sel
+	cat sel | gmx make_ndx -n ${base}_cg-solvent.ndx -o ${base}_cg-solvent.ndx
+	
+	sel4=`grep '\[' ${base}_cg-solvent.ndx | gawk '{print NR-1, $2}' | grep "${W_name}_ION" | gawk '{print $1}'`
+	echo "name $sel4 solvent" > sel5
+	echo "q" >> sel5
+	
+	cat sel5 | gmx make_ndx -n ${base}_cg-solvent.ndx -o ${base}_cg-solvent.ndx
+	rm sel sel5
+	
+	cp ${script_dir}/Run.sh .
+	
+	sed -i "s/lipid/${lipid_type}/g" *.mdp
+	sed -i "s/protein/Protein/g" *.mdp 
+
+## Embedding the MP ##
+else
+	gmx editconf -f $MP_input -c -box ${x_len} ${y_len} ${x_len} -o ${MP}_center.pdb
+	gmx editconf -f ${base}_cg.pdb -c -box ${x_len} ${y_len} ${x_len} -o  ${base}_cg_center.pdb
+	cat ${MP}_center.pdb ${base}_cg_center.pdb > ${MP}_${base}.pdb
+	
+	echo "insane -f ${MP}_${base}.pdb -o ${MP}_${base}_cg-solvent.gro -p ${MP}_${base}_cg-solvent.top -pbc cubic -x ${x_len} -y ${y_len} -z ${z_len} -center ${lipid_flag} -disc ${r} -a ${apl} -ring -sol ${W_name} -salt 0.15 -excl -1 -asym ${asym_corr}"
+	insane -f ${MP}_${base}.pdb -o ${MP}_${base}_cg-solvent.gro -p ${MP}_${base}_cg-solvent.top -pbc cubic -x ${x_len} -y ${y_len} -z ${z_len} -center  ${lipid_flag} -disc ${r} -a ${apl} -ring -sol ${W_name} -salt 0.15 -excl -1 -asym ${asym_corr}
+fi
+
+	### For the atomistic topology for the MSP ###
+	line_start=`grep -n "$base " ${base}_AA.top | gawk -F ':' '{print $1}'`
+	line=$((line_start))
+	echo $line
+	
+	for lipid_type in "${lipid_types[@]}"
+	do
+	        # For adding it to the AA top file
+	        count_lipids=0
+	        for i in `grep "$lipid_type " ${base}_cg-solvent.top | gawk '{print $2}'`
+	        do
+	        count_lipids=$((count_lipids+i))
+	        done
+	
+	        sed -i "${line}i $lipid_type     $count_lipids" ${base}_AA.top
+	        line=$((line+1))
+	
+	done
+	
+	
+	sed -i "${line_start}i ${base}    2" ${base}_AA.top
+	sed -i '$d' ${base}_AA.top
+	
+	
+	#Correcting the names of the ions in the gro file
+	#updating the top file with the correct names and itp files
+	
+	if [ "$FF" = "martini22" ]
+	then 
+	sed -i 's/"martini.itp"/"martini_v2.2.itp"/' ${MP}_${base}_cg-solvent.top
+	sed -i "2i #include \"${base}_A.itp\"" ${MP}_${base}_cg-solvent.top
+	sed -i "3i #include \"${MP}.itp\"" ${MP}_${base}_cg-solvent.top
+	sed -i '4i #include "martini_v2.0_solvents.itp"' ${MP}_${base}_cg-solvent.top
+	sed -i '5i #include "martini_v2.0_ions.itp"' ${MP}_${base}_cg-solvent.top
+	sed -i "s/Protein/${base}_A/" ${MP}_${base}_cg-solvent.top
+	sed -i "14i ${base}_A          1" ${MP}_${base}_cg-solvent.top
+	sed -i "16i ${MP}              1" ${MP}_${base}_cg-solvent.top
+	
+		elif [ "$FF" != "martini22" ]
+		then
+		sed -i 's/NA+/TNA/g' ${MP}_${base}_cg-solvent.gro
+		sed -i 's/CL-/TCL/g' ${MP}_${base}_cg-solvent.gro
+		sed -i 's/"martini.itp"/"martini_3.0.b.3.2\/martini_v3.0.b.3.2.itp"/' ${MP}_${base}_cg-solvent.top
+		sed -i "2i #include \"${base}_A.itp\"" ${base}_cg-solvent.top
+		sed -i "3i #include \"${MP}.itp\"" ${base}_cg-solvent.top
+		sed -i '4i #include "martini_3.0.b.3.2/martini_v3.0_phospholipids.itp"' ${MP}_${base}_cg-solvent.top
+		sed -i '5i #include "martini_3.0.b.3.2/martini_v3.0_solvents.itp"' ${MP}_${base}_cg-solvent.top
+		sed -i '6i #include "martini_3.0.b.3.2/martini_v3.0_ions.itp"' ${MP}_${base}_cg-solvent.top
+		sed -i "s/Protein/${base}_A/" ${MP}_${base}_cg-solvent.top
+		sed -i "15i ${base}_A          1" ${MP}_${base}_cg-solvent.top
+		sed -i "16i ${MP}              1" ${MP}_${base}_cg-solvent.top
+		sed -i 's/NA+/TNA/' ${MP}_${base}_cg-solvent.top
+		sed -i 's/CL-/TCL/' ${MP}_${base}_cg-solvent.top
+	fi
+	
+	
+	line=6
+	if [ "$FF" = "martini22" ]
+	then
+		for lipid_type in "${lipid_types[@]}"
+		do
+			sed -i "${line}i #include \"${lipid_type}.itp\"" ${MP}_${base}_cg-solvent.top
+			line=$((line+1))
+			cp ${script_dir}/Martini_lipid_itps/${lipid_type}.itp .
+		done
+	fi
+	
+	
+	cp ${script_dir}/MDP_FILES_CG/*.mdp .
+	
+	#Grompping a min tpr
+	gmx grompp -f min1.mdp -c ${MP}_${base}_cg-solvent.gro -o ${MP}_${base}_cg-solvent-min.tpr -p ${MP}_${base}_cg-solvent.top -maxwarn 1
+	
+	##Generating a index file with the group solvent being water + ions
+	echo 'q' | gmx make_ndx -f ${MP}_${base}_cg-solvent-min.tpr -o ${MP}_${base}_cg-solvent.ndx 
+	sel1=`grep '\[' ${MP}_${base}_cg-solvent.ndx | gawk '{print NR-1, $2}' | grep "${W_name}" | gawk '{print $1}'`
+	sel2=`grep '\[' ${MP}_${base}_cg-solvent.ndx | gawk '{print NR-1, $2}' | grep 'ION' | gawk '{print $1}'`
+	echo "$sel1 | $sel2" > sel
+	echo "q" >> sel
+	cat sel | gmx make_ndx -n ${MP}_${base}_cg-solvent.ndx -o ${MP}_${base}_cg-solvent.ndx
+	
+	sel4=`grep '\[' ${MP}_${base}_cg-solvent.ndx | gawk '{print NR-1, $2}' | grep "${W_name}_ION" | gawk '{print $1}'`
+	echo "name $sel4 solvent" > sel5
+	echo "q" >> sel5
+	
+	cat sel5 | gmx make_ndx -n ${MP}_${base}_cg-solvent.ndx -o ${MP}_${base}_cg-solvent.ndx
+	rm sel sel5
+	
+	cp ${script_dir}/Run.sh .
+	
+	sed -i "s/lipid/${lipid_type}/g" *.mdp
+	sed -i "s/protein/Protein/g" *.mdp 
+
+source deactivate
+
+############# Minimazing and equlibrating CG ##########################
+#./Run.sh
+#rm step*.pdb
+#rm \#*#
+#

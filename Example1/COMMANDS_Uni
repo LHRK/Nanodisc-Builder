@@ -7,19 +7,21 @@
 # It build the MSPs atomistically with the python scripts, and then coarse grain the structures and insert lipids using martinize and insane.py
 
 # Stuff you need to edit
-export base='1D1' #Base name for the system / Nanodisc
+export base='2n5e' #Base name for the system / Nanodisc
 FF='martini22' #martini22 or martini_3.0.b.3.2/martini303v.partition
 fasta="${base}.fasta" 
-x_len=15 #Size of the box in nm, assumed cubic
+r1=144 #Resids in the sequence for imposing, when constructing the MSP dimer
+r2=144
+trans_z=12 #distance in angstrom between the two MSP monomers
+interface='LL' #LL = Left-Left interface or RR for Right-Right interface. 
+x_len=15 #Size of the box in nm
 y_len=15
 z_len=15
 lipid_types=(POPC POPG) # lipid types
 lipid_flag='-l POPC:90 -l POPG:10 -u POPC:90 -u POPG:10' # flag for insane. The -l and -u flags are for lower and upper leaflet, respectively. Here POPC and POPG are inserted in a 9:1 ratio. 
-apl=0.7 # Area per lipid in nm² for use in insane 
+apl=0.59 # Area per lipid in nm² for use in insane
 asym_corr=0 # Use for correting the amount of lipids in each leaflet, if insane dose not inseret the same amount in each leaflet. 
-MP='GCGR' #set to None if lipid-only disc, otherwise name for the MP. Used for output files
-MP_input='GCGR_cg.pdb' #input coarse grained file of the MP. 
-script_dir='PATH/SCRIPTS' # Directory for where all the scripts, force field parameters and mdp files are located. 
+script_dir='../Scripts' # Directory for where all the scripts, force field parameters and mdp files are located. 
 
 ########################
 # Reads in flags
@@ -44,21 +46,6 @@ echo 'Sligar disc, with terminals'
                         then
                         echo 'Use Connect for circularized or none for standard sligar discs'
 fi
-
-########################
-# Assesing the radius of the disc
-
-source activate ND_Builder
-
-
-# The python provides a Suggesting.txt file, with approximate radius 
-cp ${script_dir}/Calc_number_lipids.py .
-echo "python Calc_number_lipids.py -f ${fasta}"
-python Calc_number_lipids.py -f ${fasta} 
-r=`grep 'Radius' Suggestions.txt | awk -F ':' '{print $2}'`
-echo "suggested radius $r"
-echo "suggested radius $r" > radius.txt
-
 ########################
 #Setting the water name depending on the martini verison
 
@@ -75,13 +62,26 @@ cp ${script_dir}/Martini2_itpFiles/*.itp .
 fi
 
 ########################
+# Assesing the radius of the disc
+
+source activate ND_Builder
+
+# The python provides a Suggesting.txt file, with approximate radius 
+cp ${script_dir}/Calc_number_lipids.py .
+echo "python Calc_number_lipids.py -f ${fasta}"
+python Calc_number_lipids.py -f ${fasta} 
+r=`grep 'Radius' Suggestions.txt | awk -F ':' '{print $2}'`
+echo "suggested radius $r"
+echo "suggested radius $r" > radius.txt
+
+########################
 
 # Building the MSPs and assembling them atomistically
 cp ${script_dir}/Build_MSP_monomer.py .
 cp ${script_dir}/Assemble_two_monomers.py .
 
 python -W ignore Build_MSP_monomer.py -f $fasta -o ${base}_monomer
-python -W ignore Assemble_two_monomers.py -m ${base}_monomer.pdb -o ${base}_dimer -f ${base}.fasta -w
+python -W ignore Assemble_two_monomers.py -m ${base}_monomer.pdb -o ${base}_dimer --r1 ${r1} --r2 ${r2} -t ${trans_z} --if ${interface}
 
 #Adding hydrogens and generating an atomistic topology - so far only for sligar, so for circularized you will need to correct the itp file
 gmx editconf -f ${base}_dimer_assembled.pdb -o ${base}-box.gro -box ${x_len} ${y_len} ${z_len}
@@ -107,19 +107,18 @@ sed -i "2i #include \"${base}_AA.itp\"" ${base}_AA.top
 
 cp ${base}_AA.top ${base}_AA_nowat.top
 
-
 for lipid in "${lipid_types[@]}"
 do
 	sed -i "3i #include \"$lipid.itp\"" ${base}_AA.top
+	sed -i "4i #include \"charmm36.ff/tip3p.itp\"" ${base}_AA.top
+	sed -i "5i #include \"charmm36.ff/ions.itp\"" ${base}_AA.top
 done
-
-sed -i "4i #include \"charmm36.ff/tip3p.itp\"" ${base}_AA.top
-sed -i "5i #include \"charmm36.ff/ions.itp\"" ${base}_AA.top
 
 gmx editconf -f ${base}_dimer_assembled.pdb -box ${x_len} ${y_len} ${x_len} -o ${base}_dimer_box.pdb
 AA_struc="${base}_dimer_box.pdb"
 
 #Generating the coarse grained structure
+source activate py2.7
 ##Generate the ss.dat file
 N=`grep -c CA ${AA_struc}`
 rm ss.dat # Just in case there is one file already
@@ -128,7 +127,8 @@ do
 echo -n 'H' >> ss.dat
 done
 
-source deactivate
+
+source deactivate 
 source activate CG_env
 
 ################ Coarse graining ######################################
@@ -142,6 +142,7 @@ then
 	echo "./martinize -f ${AA_struc} -o ${base}_cg.top -x ${base}_cg.pdb -v -name ${base} -ss $(cat ss.dat) -ff ${FF} -p Backbone"
 	./martinize -f ${AA_struc} -o ${base}_cg.top -x ${base}_cg.pdb -v -name ${base} -ss $(cat ss.dat) -ff ${FF} -p Backbone
 fi
+source deactivate
 
 #######################################################################
 
@@ -150,6 +151,7 @@ if [ "$f" = "Connect" ]
 then
 	./Corr_itp_circularized.sh ${base}_A.itp
 fi
+
 
 ######################################################################
 ### For embedding a MP in the disc ###################################
@@ -357,10 +359,12 @@ fi
 	sed -i "s/lipid/${lipid_type}/g" *.mdp
 	sed -i "s/protein/Protein/g" *.mdp 
 
+
 source deactivate
 
 ############# Minimazing and equlibrating CG ##########################
 #./Run.sh
 #rm step*.pdb
 #rm \#*#
-#
+
+

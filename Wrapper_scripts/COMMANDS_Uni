@@ -21,7 +21,7 @@ lipid_types=(POPC POPG) # lipid types
 lipid_flag='-l POPC:90 -l POPG:10 -u POPC:90 -u POPG:10' # flag for insane. The -l and -u flags are for lower and upper leaflet, respectively. Here POPC and POPG are inserted in a 9:1 ratio. 
 apl=0.59 # Area per lipid in nm² for use in insane
 asym_corr=0 # Use for correting the amount of lipids in each leaflet, if insane dose not inseret the same amount in each leaflet. 
-script_dir='PATH/SCRIPTS' # Directory for where all the scripts, force field parameters and mdp files are located. 
+script_dir='../Scripts' # Directory for where all the scripts, force field parameters and mdp files are located. 
 
 ########################
 # Reads in flags
