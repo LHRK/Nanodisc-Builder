@@ -182,9 +182,9 @@ Once the MSP dimer is constructed, lipids can be inserted with Insane, after coa
 
 An ss.dat file is constructed, and is simply the secondary structure of the MSP defined as pure helix.\
 Can be constructed automaticly as such:
-> N=\`grep -c CA 1D1_dimer_assembled.pdb\`\
+> N=\`grep -c CA 1D1_dimer_assembled.pdb\`
 
-> if test -f $"ss.dat"; then; rm ss.dat; fi
+> if test -f $"ss.dat"; then rm ss.dat; fi
 
 > for i in \`seq 1 $N\`\
 > do\
