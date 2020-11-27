@@ -191,7 +191,7 @@ Can be constructed automaticly as such:
 > 	echo -n 'H' >> ss.dat\
 > done
 
-> ./martinize -f 1D1_dimer.pdb -o 1D1_cg.top -x 1D1_cg.pdb -v -name 1D1 -ss $(cat ss.dat) -ff martini22 -p Backbone
+> ./martinize -f 1D1_dimer_assembled.pdb -o 1D1_cg.top -x 1D1_cg.pdb -v -name 1D1 -ss $(cat ss.dat) -ff martini22 -p Backbone
 
 Next the lipids are inserted with the Insane script:\
 First an estimated radius of the disc is needed.\
@@ -238,7 +238,7 @@ Go into the directory called Example 2\
 
 > conda activate CG_env
 
-> ./martinize -f 1D1_dimer.pdb -o 1D1_cg.top -x 1D1_cg.pdb -v -name 1D1 -ss $(cat ss.dat) -ff martini22 -p Backbone
+> ./martinize -f 1D1_dimer_assembled.pdb -o 1D1_cg.top -x 1D1_cg.pdb -v -name 1D1 -ss $(cat ss.dat) -ff martini22 -p Backbone
 
 > ./Calc_number_lipids.py -f 1D1.fasta -a 0.70 -p 0\
 > r=\`grep 'Radius' Suggestions.txt | awk -F ':' '{print $2}'\`
