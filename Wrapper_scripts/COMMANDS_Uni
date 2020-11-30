@@ -1,5 +1,9 @@
 #!/bin/bash
 
+source ~/anaconda3/etc/profile.d/conda.sh
+#Depending on the path to your anaconda or miniconda installation
+#It is for conda to work within this script
+
 ## COMMENTS ###
 
 # You will only need this script and the fasta file for the Nanodisc you want to build. 
