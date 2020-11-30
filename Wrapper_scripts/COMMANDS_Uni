@@ -71,7 +71,7 @@ fi
 ########################
 # Assesing the radius of the disc
 
-source activate ND_Builder
+conda activate ND_Builder
 
 # The python provides a Suggesting.txt file, with approximate radius 
 cp ${dir}/Scripts/Calc_number_lipids.py .
@@ -131,7 +131,7 @@ gmx editconf -f ${base}_dimer_assembled.pdb -box ${x_len} ${y_len} ${x_len} -o $
 AA_struc="${base}_dimer_box.pdb"
 
 #Generating the coarse grained structure
-source activate py2.7
+conda activate py2.7
 ##Generate the ss.dat file
 N=`grep -c CA ${AA_struc}`
 rm ss.dat # Just in case there is one file already
@@ -141,11 +141,11 @@ echo -n 'H' >> ss.dat
 done
 
 
-source deactivate 
-source activate CG_env
+conda deactivate 
+conda activate CG_env
 
 ################ Coarse graining ######################################
-source activate py.27
+conda activate py.27
 if [ "$f" = "Connect" ]
 then
 	echo "./martinize -f ${base}_dimer_box.pdb -o ${base}_cg.top -x ${base}_cg.pdb -v -name ${base} -ss $(cat ss.dat) -ff ${FF} -p Backbone -nt"
@@ -155,7 +155,7 @@ then
 	echo "./martinize -f ${base}_dimer_box.pdb -o ${base}_cg.top -x ${base}_cg.pdb -v -name ${base} -ss $(cat ss.dat) -ff ${FF} -p Backbone"
 	./martinize -f ${base}_dimer_box.pdb -o ${base}_cg.top -x ${base}_cg.pdb -v -name ${base} -ss $(cat ss.dat) -ff ${FF} -p Backbone
 fi
-source deactivate
+conda deactivate
 
 #######################################################################
 
@@ -177,7 +177,7 @@ if [[ $MP == 'None' ]]; then
 	echo "insane -f ${base}_cg.pdb -o ${base}_cg-solvent.gro -p ${base}_cg-solvent.top -pbc cubic -x ${x_len} -y ${y_len} -z ${z_len} -center ${lipid_flag} -disc ${r} -a ${apl} -ring -sol ${W_name} -salt 0.15 -excl -1 -asym ${asym_corr}"
 	insane -f ${base}_cg.pdb -o ${base}_cg-solvent.gro -p ${base}_cg-solvent.top -pbc cubic -x ${x_len} -y ${y_len} -z ${z_len} -center  ${lipid_flag} -disc ${r} -a ${apl} -ring -sol ${W_name} -salt 0.15 -excl -1 -asym ${asym_corr}
 	
-	#source deactivate
+	#conda deactivate
 	#####################################################################
 	
 	line_start=`grep -n "$base " ${base}_AA.top | gawk -F ':' '{print $1}'`
@@ -372,7 +372,7 @@ else
 	sed -i "s/protein/Protein/g" *.mdp 
 fi
 
-source deactivate
+conda deactivate
 
 ############# Minimazing and equlibrating CG ##########################
 #./Run.sh

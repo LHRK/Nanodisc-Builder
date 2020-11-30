@@ -52,7 +52,7 @@ fi
 ########################
 # Assesing the radius of the disc
 
-source activate ND_Builder
+conda activate ND_Builder
 
 
 # The python provides a Suggesting.txt file, with approximate radius 
@@ -131,8 +131,8 @@ do
 echo -n 'H' >> ss.dat
 done
 
-source deactivate
-source activate CG_env
+conda deactivate
+conda activate CG_env
 
 
 
@@ -363,7 +363,7 @@ else
 	sed -i "s/lipid/${lipid_type}/g" *.mdp
 	sed -i "s/protein/Protein/g" *.mdp 
 fi
-source deactivate
+conda deactivate
 
 ############# Minimazing and equlibrating CG ##########################
 #./Run.sh
