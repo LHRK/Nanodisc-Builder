@@ -158,15 +158,15 @@ All of the below commands are embedded in the COMMANDS_default script as well.
 
 > conda activate ND_Builder
 
-> ./Build_MSP_monomer.py -f 1D1.fasta -o 1D1_monomer
+> ./Scripts/Build_MSP_monomer.py -f 1D1.fasta -o 1D1_monomer
 
 Assemble using default settings:
 
->./Assemble_two_monomers.py -m 1D1_monomer.pdb -f 1D1.fasta -o 1D1_dimer -w
+>./Scripts/Assemble_two_monomers.py -m 1D1_monomer.pdb -f 1D1.fasta -o 1D1_dimer -w
 
 Assemble using specific settings, using tandem H5, with an RR interface and 10 angstrom space between the two MSP monomers.
 
->./Assemble_two_monomers.py -m 1D1_monomer.pdb -f 1D1.fasta -o 1D1_dimer -H 'H5' -t 10 --if RR
+>./Scripts/Assemble_two_monomers.py -m 1D1_monomer.pdb -f 1D1.fasta -o 1D1_dimer -H 'H5' -t 10 --if RR
 
 Once the MSP dimer is constructed, lipids can be inserted with Insane, after coarse graining the MSP dimer with the martinize script. 
 
@@ -183,7 +183,7 @@ Can be constructed automaticly as such:
 > 	echo -n 'H' >> ss.dat\
 > done
 
-> ./martinize -f 1D1_dimer_assembled.pdb -o 1D1_cg.top -x 1D1_cg.pdb -v -name 1D1 -ss $(cat ss.dat) -ff martini22 -p Backbone
+> ./Scripts/martinize -f 1D1_dimer_assembled.pdb -o 1D1_cg.top -x 1D1_cg.pdb -v -name 1D1 -ss $(cat ss.dat) -ff martini22 -p Backbone
 
 NB. If martinize comes with an error, "can't divide with zero", run the pdb through GROMACS and try again:
 > gmx editconf -f 1D1_dimer_assembled.pdb -o 1D1_dimer_assembled.pdb
@@ -191,7 +191,7 @@ NB. If martinize comes with an error, "can't divide with zero", run the pdb thro
 Next the lipids are inserted with the Insane script:\
 First an estimated radius of the disc is needed.\
 This can be obtained with the script:
-> ./Calc_number_lipids.py -f 1D1.fasta\
+> ./Scripts/Calc_number_lipids.py -f 1D1.fasta\
 > r=\`grep 'Radius' Suggestions.txt | awk -F ':' '{print $2}'\`
 
 > insane -f 1D1_cg.pdb -o 1D1_cg-solvent.gro -p 1D1_cg-solvent.top -pbc cubic -x 15 -y 15 -z 15 -center -l POPC -disc ${r} -a 0.7 -ring -sol W -salt 0.15 -excl -1  
@@ -206,7 +206,7 @@ This is designed for the GROMACS software.
 
 For constructing a circularized disc, the script Corr_itp_circularized.sh can be used to correct the itp file for the coarse grained MSP.\
 The itp file is one of the outputs from the Martinize script.
-> ./Corr_itp_circularized.sh 1D1_A.itp
+> ./Scripts/Corr_itp_circularized.sh 1D1_A.itp
 
 ### Automization
 
@@ -221,9 +221,9 @@ Go into the directory called Example2_complex_lipid_composition\
 
 > conda activate ND_Builder
 
-> ./Build_MSP_monomer.py -f 1D1.fasta -o 1D1_monomer
+> ./Scripts/Build_MSP_monomer.py -f 1D1.fasta -o 1D1_monomer
 
->./Assemble_two_monomers.py -m 1D1_monomer.pdb -f 1D1.fasta -o 1D1_dimer -w
+> ./Scripts/Assemble_two_monomers.py -m 1D1_monomer.pdb -f 1D1.fasta -o 1D1_dimer -w
 
 or
 
@@ -237,9 +237,9 @@ or
 
 > conda activate CG_env
 
-> ./martinize -f 1D1_dimer_assembled.pdb -o 1D1_cg.top -x 1D1_cg.pdb -v -name 1D1 -ss $(cat ss.dat) -ff martini22 -p Backbone
+> ./Scripts/martinize -f 1D1_dimer_assembled.pdb -o 1D1_cg.top -x 1D1_cg.pdb -v -name 1D1 -ss $(cat ss.dat) -ff martini22 -p Backbone
 
-> ./Calc_number_lipids.py -f 1D1.fasta\
+> ./Scripts/Calc_number_lipids.py -f 1D1.fasta\
 > r=\`grep 'Radius' Suggestions.txt | awk -F ':' '{print $2}'\`
 
 
