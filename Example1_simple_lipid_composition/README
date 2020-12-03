@@ -1,6 +1,7 @@
-The script COMMANDS_default copied the scripts from the ../Scripts directory into this directory.
+The script COMMANDS_default copies the scripts from the ../Scripts directory into this directory.
 
 You can either run the COMMANDS_default script, which should build the entire system, solvated and neutralized.
-Ot you can copy the python script into this directory, and try it out manually.
+Ot you can copy the python scripts into this directory, and try it out manually.
 
-The COMMANDS_default script might fail with martinize or insane, since they will need a change of virtual environment. 
+The COMMANDS_default script might fail with martinize or insane, since they will need a change of virtual environment.
+Also, depending on Insane version the output itp file might be named 1D1.itp instead of 1D1_A.itp
