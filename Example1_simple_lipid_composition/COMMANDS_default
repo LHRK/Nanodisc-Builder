@@ -2,6 +2,7 @@
 
 ## COMMENTS ###
 
+source ~/anaconda3/etc/profile.d/conda.sh 
 # You will only need this script and the fasta file for the Nanodisc you want to build. 
 # The script will copy the needed files to the working directory
 # It build the MSPs atomistically with the python scripts, and then coarse grain the structures and insert lipids using martinize and insane.py
@@ -48,7 +49,7 @@ fi
 ########################
 # Assesing the radius of the disc
 
-source activate ND_Builder
+conda activate ND_Builder
 
 
 # The python provides a Suggesting.txt file, with approximate radius 
@@ -88,13 +89,13 @@ cp -r ${dir}/charmm36.ff .
 gmx pdb2gmx -f ${base}-box.gro -o ${base}-pdb2gmx.gro -p ${base}_AA_pdb2gmx.top -ff charmm36 -water none -i ${base}_posres.itp
 
 
-line=`grep -n 'endif' ${base}_AA_pdb2gmx.top | gawk -F : '{print $1}'`
+line=`grep -n 'endif' ${base}_AA_pdb2gmx.top | awk -F : '{print $1}'`
 head -n $((line)) ${base}_AA_pdb2gmx.top > ${base}_AA.itp
 sed -i '20d' ${base}_AA.itp
 sed -i '20d' ${base}_AA.itp
 
 
-tot_lines=`wc -l ${base}_AA_pdb2gmx.top | gawk '{print $1}'`
+tot_lines=`wc -l ${base}_AA_pdb2gmx.top | awk '{print $1}'`
 top_lines=$((tot_lines-line))
 tail -n $top_lines ${base}_AA_pdb2gmx.top > ${base}_AA.top
 
@@ -127,8 +128,8 @@ do
 echo -n 'H' >> ss.dat
 done
 
-source deactivate
-source activate CG_env
+conda deactivate
+conda activate CG_env
 
 
 
@@ -166,7 +167,7 @@ if [[ $MP == 'None' ]]; then
 	#conda deactivate
 	#####################################################################
 	
-	line_start=`grep -n "$base " ${base}_AA.top | gawk -F ':' '{print $1}'`
+	line_start=`grep -n "$base " ${base}_AA.top | awk -F ':' '{print $1}'`
 	line=$((line_start))
 	echo $line
 	
@@ -174,7 +175,7 @@ if [[ $MP == 'None' ]]; then
 	do
 	        # For adding it to the AA top file
 	        count_lipids=0
-	        for i in `grep "$lipid_type " ${base}_cg-solvent.top | gawk '{print $2}'`
+	        for i in `grep "$lipid_type " ${base}_cg-solvent.top | awk '{print $2}'`
 	        do
 	        count_lipids=$((count_lipids+i))
 	        done
@@ -237,13 +238,13 @@ if [[ $MP == 'None' ]]; then
 	
 	##Generating a index file with the group solvent being water + ions
 	echo 'q' | gmx make_ndx -f ${base}_cg-solvent-min.tpr -o ${base}_cg-solvent.ndx 
-	sel1=`grep '\[' ${base}_cg-solvent.ndx | gawk '{print NR-1, $2}' | grep "${W_name}" | gawk '{print $1}'`
-	sel2=`grep '\[' ${base}_cg-solvent.ndx | gawk '{print NR-1, $2}' | grep 'ION' | gawk '{print $1}'`
+	sel1=`grep '\[' ${base}_cg-solvent.ndx | awk '{print NR-1, $2}' | grep "${W_name}" | awk '{print $1}'`
+	sel2=`grep '\[' ${base}_cg-solvent.ndx | awk '{print NR-1, $2}' | grep 'ION' | awk '{print $1}'`
 	echo "$sel1 | $sel2" > sel
 	echo "q" >> sel
 	cat sel | gmx make_ndx -n ${base}_cg-solvent.ndx -o ${base}_cg-solvent.ndx
 	
-	sel4=`grep '\[' ${base}_cg-solvent.ndx | gawk '{print NR-1, $2}' | grep "${W_name}_ION" | gawk '{print $1}'`
+	sel4=`grep '\[' ${base}_cg-solvent.ndx | awk '{print NR-1, $2}' | grep "${W_name}_ION" | awk '{print $1}'`
 	echo "name $sel4 solvent" > sel5
 	echo "q" >> sel5
 	
@@ -267,7 +268,7 @@ else
 	insane -f ${MP}_${base}.pdb -o ${MP}_${base}_cg-solvent.gro -p ${MP}_${base}_cg-solvent.top -pbc cubic -x ${x_len} -y ${y_len} -z ${z_len} -center  ${lipid_flag} -disc ${r} -a ${apl} -ring -sol ${W_name} -salt 0.15 -excl -1 -asym ${asym_corr}
 
 	### For the atomistic topology for the MSP ###
-	line_start=`grep -n "$base " ${base}_AA.top | gawk -F ':' '{print $1}'`
+	line_start=`grep -n "$base " ${base}_AA.top | awk -F ':' '{print $1}'`
 	line=$((line_start))
 	echo $line
 	
@@ -275,7 +276,7 @@ else
 	do
 	        # For adding it to the AA top file
 	        count_lipids=0
-	        for i in `grep "$lipid_type " ${base}_cg-solvent.top | gawk '{print $2}'`
+	        for i in `grep "$lipid_type " ${base}_cg-solvent.top | awk '{print $2}'`
 	        do
 	        count_lipids=$((count_lipids+i))
 	        done
@@ -341,13 +342,13 @@ else
 	
 	##Generating a index file with the group solvent being water + ions
 	echo 'q' | gmx make_ndx -f ${MP}_${base}_cg-solvent-min.tpr -o ${MP}_${base}_cg-solvent.ndx 
-	sel1=`grep '\[' ${MP}_${base}_cg-solvent.ndx | gawk '{print NR-1, $2}' | grep "${W_name}" | gawk '{print $1}'`
-	sel2=`grep '\[' ${MP}_${base}_cg-solvent.ndx | gawk '{print NR-1, $2}' | grep 'ION' | gawk '{print $1}'`
+	sel1=`grep '\[' ${MP}_${base}_cg-solvent.ndx | awk '{print NR-1, $2}' | grep "${W_name}" | awk '{print $1}'`
+	sel2=`grep '\[' ${MP}_${base}_cg-solvent.ndx | awk '{print NR-1, $2}' | grep 'ION' | awk '{print $1}'`
 	echo "$sel1 | $sel2" > sel
 	echo "q" >> sel
 	cat sel | gmx make_ndx -n ${MP}_${base}_cg-solvent.ndx -o ${MP}_${base}_cg-solvent.ndx
 	
-	sel4=`grep '\[' ${MP}_${base}_cg-solvent.ndx | gawk '{print NR-1, $2}' | grep "${W_name}_ION" | gawk '{print $1}'`
+	sel4=`grep '\[' ${MP}_${base}_cg-solvent.ndx | awk '{print NR-1, $2}' | grep "${W_name}_ION" | awk '{print $1}'`
 	echo "name $sel4 solvent" > sel5
 	echo "q" >> sel5
 	
@@ -359,7 +360,7 @@ else
 	sed -i "s/lipid/${lipid_type}/g" *.mdp
 	sed -i "s/protein/Protein/g" *.mdp 
 fi
-source deactivate
+conda deactivate
 
 ############# Minimazing and equlibrating CG ##########################
 #./Run.sh
