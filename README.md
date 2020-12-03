@@ -19,6 +19,7 @@ It is recommended to make a virtual environment with eg Anaconda like so:
 Make a virtual environment for Insane and martinize
 > conda create -n CG_env Python=2.7\
 > conda activate CG_env\
+> conda install numpy\
 > pip install insane\
 > conda deactivate
 
@@ -153,7 +154,7 @@ Hence the two leaflets can be constructed differently as well, by using the -l a
 
 Constructing 1D1 with POPC lipids.\
 Go into the directory called Example1_simple_lipid_composition\
-All of the below commands are embedded in the COMMANDS_default script as well.\
+All of the below commands are embedded in the COMMANDS_default script as well.
 
 > conda activate ND_Builder
 
@@ -184,8 +185,8 @@ Can be constructed automaticly as such:
 
 > ./martinize -f 1D1_dimer_assembled.pdb -o 1D1_cg.top -x 1D1_cg.pdb -v -name 1D1 -ss $(cat ss.dat) -ff martini22 -p Backbone
 
-NB. If martinize comes with an error, "can't divide with zero", run the pdb through GROMACS and try again:\
-> gmx trjconv -f 1D1_dimer_assembled.pdb -o 1D1_dimer_assembled.pdb
+NB. If martinize comes with an error, "can't divide with zero", run the pdb through GROMACS and try again:
+> gmx editconf -f 1D1_dimer_assembled.pdb -o 1D1_dimer_assembled.pdb
 
 Next the lipids are inserted with the Insane script:\
 First an estimated radius of the disc is needed.\
@@ -199,7 +200,7 @@ This can be obtained with the script:
 
 Next is minimization and equlibration.\
 The Run.sh or Run_ver18.sh can be used here, along with the suggested mdp files.\
-This is designed for the GROMACS software.\
+This is designed for the GROMACS software.
 
 ### Circularization 
 
