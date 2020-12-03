@@ -65,11 +65,11 @@ Frist go into the generated virtual environment.
 Use the Build_MSP_monomer.py to construct the MSP monomer given the fasta sequence.\
 The output structure may appear to have clashed at the kinks between the tandem repeats. This is however solved upon a minimization.
 
-> ./Build_MSP_monomer.py -f base.fasta -o base
+> ./Scripts/Build_MSP_monomer.py -f base.fasta -o base
 
 For assembling the MSP dimer, use the Assemble_two_monomers.py script
 
-> ./Assemble_two_monomers.py -m base.pdb -f base.fasta -w
+> ./Scripts/Assemble_two_monomers.py -m base.pdb -f base.fasta -w
 
 For using default setting use the -w flag. This includes assembling the nanodisc with the LL5/5 registry, given the helix5 sequence is found in the input MSP sequence.\
 A distance of 12 Å between the MSP monomers is the default setting.
@@ -109,7 +109,7 @@ The script martinize and insane can then following be used for coarse graining t
 For insane an estimated radius of the ND is needed.\
 This can be calculated with the python script
 
-> ./Calc_number_lipids.py -f base.fasta 
+> ./Scripts/Calc_number_lipids.py -f base.fasta 
 
 The script output a Suggestions.txt file with an estimated radius of the disc.
 
@@ -140,8 +140,8 @@ The distance between monomers as 12 Å
 Within the two 'wrapper' scripts settings are set in top.\
 Both scripts are for using the Martini and Charmm36 FF with the GROMACS simulation software.
 
-> ./COMMANDS_Uni --help\
-> ./COMMANDS_default --help
+> ./Wrapper_scripts/COMMANDS_Uni --help\
+> ./Wrapper_scripts/COMMANDS_default --help
 
 For using the wrapper scripts with more complex lipid compositions used the COMMANDS_Uni script and edit the option:\
 lipid_flag='DLPC' in the script to eg. lipid_flag='-l POPC:90 -l POPG:10 -u POPC:90 -l POPG:10', along with the lipid_types=(POPC POPG).\
