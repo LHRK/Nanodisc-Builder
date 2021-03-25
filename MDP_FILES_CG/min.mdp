@@ -33,7 +33,6 @@ compressibility          = 4.5e-5
 ref_p                    = 1.0
 
 ; GENERATE VELOCITIES FOR STARTUP RUN:
-gen_vel                  = yes
 gen_temp                 = 310
 gen_seed                 = 1533641395
 
