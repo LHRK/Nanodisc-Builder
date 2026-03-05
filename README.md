@@ -2,6 +2,8 @@
 The protocol introduces a novel approach for constructing MSPs in silico.
 Integrated with Insane and Martinize scripts, the protocol can be used to easily construct nanodisc systems.
 
+If you use it please cite: https://pubs.acs.org/doi/10.1021/acs.jcim.1c00157 
+
 ## Installation 
 It is recommended to make a virtual environment with eg Anaconda like so:  
 (Supportive python verions: 3)
